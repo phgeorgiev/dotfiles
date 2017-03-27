@@ -16,12 +16,12 @@ mysql.server start
 /usr/local/opt/mysql/bin/mysqladmin -u root password 'root'
 
 # PHP
-cd /etc
-sudo cp php.ini.default php.ini 
-sudo sed -i '' "s^mysql.default_socket =^mysql.default_socket = /tmp/mysql.sock^" php.ini
-sudo sed -i '' "s^;date.timezone =^date.timezone = Europe/Moscow^" php.ini
-sudo sed -i '' "s^;extension=php_sqlite3.dll^extension=php_sqlite3.dll^" php.ini
-sudo sed -i '' "s^display_errors = Off^display_errors = On^" php.ini
+brew tap homebrew/dupes
+brew tap homebrew/versions
+brew tap homebrew/homebrew-php
+
+brew unlink php70
+brew install php71
 
 # Apache: enable PHP, .htaccess files, virtual hosts and set it to run as current user
 cd /etc/apache2
