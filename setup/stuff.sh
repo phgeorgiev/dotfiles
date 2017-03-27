@@ -60,3 +60,13 @@ pip install proselint
 
 # Remove outdated versions from the cellar
 brew cleanup
+
+# Install Descktop apps
+brew cask install iterm2
+brew cask install google-chrome
+brew cask install google-drive
+brew cask install vlc
+brew cask install the-unarchiver
+brew cask install slack
+brew cask install istat-menu
+brew cask install utorrent
