@@ -65,7 +65,7 @@ brew cask install google-drive
 brew cask install vlc
 brew cask install the-unarchiver
 brew cask install slack
-brew cask install istat-menu
+brew cask install istat-menus
 brew cask install utorrent
 
 # Remove outdated versions from the cellar
