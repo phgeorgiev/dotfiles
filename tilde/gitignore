@@ -23,3 +23,7 @@ yarn-error.log
 # IDEs stuff
 .idea
 .rubymine_helpers
+
+.tags
+.tags1
+.tags2
