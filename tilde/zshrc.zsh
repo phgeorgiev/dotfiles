@@ -91,7 +91,7 @@ export GIT_FRIENDLY_NO_COMPOSER=false
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 # Theme.
-ZSH_THEME="squirrelbook"
+ZSH_THEME="../custom/themes/powerlevel9k/powerlevel9k"
 # Uncomment the following line to use hyphen-insensitive completion. Case
 # sensitive completion must be off. _ and - will be interchangeable.
 # HYPHEN_INSENSITIVE="true"
