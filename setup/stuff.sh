@@ -52,11 +52,12 @@ npm install -g textlint-rule-common-misspellings
 npm install -g textlint-rule-no-dead-link
 
 # Yarn
-npm install -g yarn
+brew install yarn
 
 # Python
 brew install python
 pip install proselint
+pip install ansible
 
 # Install Descktop apps
 brew cask install iterm2
@@ -66,7 +67,6 @@ brew cask install vlc
 brew cask install the-unarchiver
 brew cask install slack
 brew cask install istat-menus
-brew cask install utorrent
 
 # Remove outdated versions from the cellar
 brew cleanup

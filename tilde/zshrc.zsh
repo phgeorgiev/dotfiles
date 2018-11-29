@@ -65,6 +65,8 @@ less_options=(
 export LESS="${less_options[*]}"
 export PAGER='less'
 
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
 # Terminal title
 DISABLE_AUTO_TITLE="true"
 function _set_terminal_title() {
