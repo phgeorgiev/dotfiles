@@ -15,6 +15,7 @@
 	quotepath = false
 [alias]
 	a = add
+	ap = add -p
 	ua = reset HEAD
 	c = commit
 	ca = commit -a
