@@ -6,7 +6,7 @@
 	old = red bold
 	new = green bold
 [core]
-	editor = nano
+	editor = vim
 	pager = diff-so-fancy | less --chop-long-lines --quit-if-one-screen --no-init --tabs=1,5 -R
 	autocrlf = false
 	safecrlf = false
