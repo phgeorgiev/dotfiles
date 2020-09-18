@@ -2,6 +2,8 @@
 *.pyc
 VENV
 
+chromedriver
+
 # Folder view configuration files
 .DS_Store
 Desktop.ini
@@ -23,6 +25,7 @@ yarn-error.log
 # IDEs stuff
 .idea
 .rubymine_helpers
+.vscode
 
 .tags
 .tags1
