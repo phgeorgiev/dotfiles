@@ -28,6 +28,7 @@ $dry_run brew install wifi-password
 $dry_run brew install zsh
 $dry_run brew install gitui
 $dry_run brew install composer
+$dry_run brew install diff-so-fancy
 
 echo
 echo "${green}Success! Packages installed.${normal}"
