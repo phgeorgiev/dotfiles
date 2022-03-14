@@ -23,6 +23,7 @@ $dry_run brew install yarn
 $dry_run brew install wifi-password
 $dry_run brew install zsh
 $dry_run brew install gitui
+$dry_run brew install composer
 
 echo
 echo "${green}Success! software installed.${normal}"
