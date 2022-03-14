@@ -12,6 +12,19 @@ chmod +x install.sh
 ./install.sh
 ```
 
+## The `dotfiles` command
+
+```
+$ dotfiles help
+Usage: dotfiles <command>
+
+Commands:
+    help             This help message
+    update           Update packages and pkg managers (brew, composer)
+    clean            Clean up caches (brew, composer)
+```
+
+
 ## Credits
 
  - [dotfiles community](http://dotfiles.github.io/)
