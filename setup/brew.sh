@@ -4,6 +4,10 @@
 if test ! $(which brew); then
     title "Installing Homebrew..."
     $dry_run /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    if test ! $(which brew); then
+        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
 fi
 
 # Make sure we’re using the latest Homebrew
