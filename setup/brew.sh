@@ -30,7 +30,7 @@ $dry_run brew install gitui
 $dry_run brew install composer
 
 echo
-echo "${green}Success! software installed.${normal}"
+echo "${green}Success! Packages installed.${normal}"
 
 # Waith a bit before moving on...
 sleep 1
@@ -52,4 +52,4 @@ $dry_run brew install --cask --appdir="/Applications" 1password
 $dry_run brew install --cask --appdir="/Applications" figma
 
 echo
-echo "${green}Success! software installed.${normal}"
+echo "${green}Success! Cask packages installed.${normal}"

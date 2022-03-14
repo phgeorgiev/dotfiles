@@ -3,7 +3,7 @@ OSX dotfiles
 
 ## Install
 
-```
+```bash
 xcode-select --install
 
 git clone https://github.com/phgeorgiev/dotfiles.git ~/dotfiles
@@ -14,7 +14,7 @@ chmod +x install.sh
 
 ## The `dotfiles` command
 
-```
+```console
 $ dotfiles help
 Usage: dotfiles <command>
 
