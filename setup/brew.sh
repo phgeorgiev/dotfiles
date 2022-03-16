@@ -26,6 +26,7 @@ $dry_run brew install gitui
 $dry_run brew install yarn
 $dry_run brew install wifi-password
 $dry_run brew install zsh
+$dry_run brew install zsh-syntax-highlighting
 $dry_run brew install gitui
 $dry_run brew install composer
 $dry_run brew install diff-so-fancy
