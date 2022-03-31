@@ -26,6 +26,7 @@ function usage {
 
 is_dry_run=false
 dry_run=
+target_dir="$HOME"
 while (($#)); do
 	case "$1" in
 		--dry-run)
@@ -51,6 +52,7 @@ done
 $is_dry_run && $dry_run "Dry run mode. Not actually executing anything."
 
 source_dir="$(cd "$(dirname "$0")" > /dev/null; pwd)"
+dots_dir="$source_dir/dots"
 
 # Ask for the administrator password upfront
 if [ $is_dry_run == false ] ; then
@@ -59,5 +61,11 @@ fi
 
 . "$source_dir/setup/brew.sh"
 
-echo;
+# Install symlinks
+for file in "$dots_dir"/*; do
+	fileName="$(basename "$file" suffix)"
+	$dry_run ln -s "$file" "$target_dir/.$fileName"
+done
+
+echo
 echo "${green}All done!${normal}"

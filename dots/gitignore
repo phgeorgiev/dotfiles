@@ -1,0 +1,22 @@
+chromedriver
+# Folder view configuration files
+.DS_Store
+.DB_Store
+Desktop.ini
+
+# Installed packages
+/vendor
+/node_modules
+/brew_components
+
+# npm
+npm-debug.log
+
+# Yarn
+yarn-error.log
+
+# IDEs stuff
+.idea
+.vscode
+
+!.gitkeep
