@@ -61,6 +61,9 @@ fi
 
 . "$source_dir/setup/brew.sh"
 
+#Install Oh My Zsh
+sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
 # Install symlinks
 for file in "$dots_dir"/*; do
 	fileName="$(basename "$file" suffix)"
