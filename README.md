@@ -13,6 +13,16 @@ chmod +x install.sh
 dotsync.py
 ```
 
+## Install iTerm color scheme
+- Launch iTerm
+- Type CMD+i
+- Navigate to Colors tab
+- Click on Load Presets
+- Click on Import
+- Select the .itermcolors file located in `iterm` folder
+- Click on Load Presets and choose a color scheme
+
+
 ## The `dotfiles` command
 
 ```console
