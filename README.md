@@ -10,6 +10,7 @@ git clone https://github.com/phgeorgiev/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 chmod +x install.sh
 ./install.sh
+dotsync.py
 ```
 
 ## The `dotfiles` command
