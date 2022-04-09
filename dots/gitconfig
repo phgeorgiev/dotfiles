@@ -31,6 +31,13 @@
 	wtf = diff --name-only --diff-filter=U
 	cleanup = "!git branch --merged | grep -v '\\*\\|master\\|develop' | xargs -n 1 git branch -d"
 
+# diff-so-fancy
+[color "diff-highlight"]
+	oldNormal = red bold
+	oldHighlight = red bold 52
+	newNormal = green bold
+	newHighlight = green bold 22
+
 # Include local settings
 # Requires Git 1.7.10
 # git config -f ~/.gitlocal user.email "your email"
