@@ -1,5 +1,7 @@
 # Dotfiles - WIP
-OSX dotfiles
+Personal OSX dotfiles
+
+![iTerm2.app](https://raw.githubusercontent.com/phgeorgiev/dotfiles/master/screenshot.png)
 
 ## Install
 
