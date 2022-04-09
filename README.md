@@ -12,7 +12,14 @@ git clone https://github.com/phgeorgiev/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 chmod +x install.sh
 ./install.sh
-bin/dotsync
+./bin/dotsync
+```
+
+### Local Git identity
+
+```bash
+git config -f ~/.gitlocal user.email "your email"
+git config -f ~/.gitlocal user.name "Your Name"
 ```
 
 ## Install iTerm color scheme

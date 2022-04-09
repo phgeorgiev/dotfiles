@@ -1,7 +1,3 @@
-[user]
-  name = Philip Georgiev
-  email = p.georgiev359@gmail.com
-
 [color]
 	ui = auto
 
@@ -34,3 +30,10 @@
 	my = !git log --branches=* --no-merges --pretty=format:'%C(reset)%C(bold)%cd %C(reset)%C(white)%s  %C(reset)%h' --date=short --author=\"$(git config user.name)\"
 	wtf = diff --name-only --diff-filter=U
 	cleanup = "!git branch --merged | grep -v '\\*\\|master\\|develop' | xargs -n 1 git branch -d"
+
+# Include local settings
+# Requires Git 1.7.10
+# git config -f ~/.gitlocal user.email "your email"
+# git config -f ~/.gitlocal user.name "Your Name"
+[include]
+	path = .gitlocal
