@@ -6,9 +6,11 @@ Based on https://gist.github.com/490016
 """
 
 import os
+import sys
 import glob
 
 SOURCE_DIR = '~/dotfiles/dots'
+COMMANDS_LIST = ['link', 'update', 'clean']
 
 class bcolors:
     OKBLUE = '\033[94m'
@@ -33,7 +35,7 @@ def is_link_to(link, dest):
     is_link = is_link and os.readlink(link).rstrip('/') == dest.rstrip('/')
     return is_link
 
-def main():
+def link():
     os.chdir(os.path.expanduser(SOURCE_DIR))
     for filename in [file for file in glob.glob('*')]:
         dotfile = '.' + filename
@@ -63,5 +65,36 @@ def main():
         print(f"{bcolors.OKGREEN}%s => %s{bcolors.ENDC}" % (dotfile,source))
         print()
 
+def update():
+    os.system("brew update")
+    os.system("brew upgrade")
+    os.system("composer self-update")
+
+def clean():
+    os.system("brew cleanup")
+    os.system("composer clear-cache")
+
+def usage():
+    print("Usage: dotsync <command>")
+    print("Commands:")
+    print("   help             This help message")
+    print("   link             Link dot files from dots folder to ~")
+    print("   update           Update packages and pkg managers (brew, commposer)")
+    print("   clean            Clean up caches (brew, composer)")
+
+def main(argv):
+    if not argv[1:] or argv[1] not in COMMANDS_LIST:
+        usage()
+        return
+
+    if argv[1] == 'link':
+        link_dots()
+
+    if argv[1] == 'update':
+        update()
+
+    if argv[1] == 'clean':
+        clean()
+
 if __name__ == '__main__':
-    main()
+    main(sys.argv)

@@ -23,14 +23,15 @@ dotsync.py
 - Click on Load Presets and choose a color scheme
 
 
-## The `dotfiles` command
+## The `dotsync` command
 
 ```console
-$ dotfiles help
-Usage: dotfiles <command>
+$ dotsync help
+Usage: dotsync <command>
 
 Commands:
     help             This help message
+    link             Link dot files from dots folder to ~
     update           Update packages and pkg managers (brew, composer)
     clean            Clean up caches (brew, composer)
 ```
