@@ -1,4 +1,5 @@
 # Dotfiles - WIP
+
 Personal OSX dotfiles
 
 ![iTerm2.app](https://raw.githubusercontent.com/phgeorgiev/dotfiles/master/screenshot.png)
@@ -23,6 +24,7 @@ git config -f ~/.gitlocal user.name "Your Name"
 ```
 
 ## Install iTerm color scheme
+
 - Launch iTerm
 - Type CMD+i
 - Navigate to Colors tab
@@ -30,7 +32,6 @@ git config -f ~/.gitlocal user.name "Your Name"
 - Click on Import
 - Select the .itermcolors file located in `iterm` folder
 - Click on Load Presets and choose a color scheme
-
 
 ## The `dotsync` command
 
@@ -45,11 +46,9 @@ Commands:
     clean            Clean up caches (brew, composer)
 ```
 
-
 ## Credits
 
- - [dotfiles community](http://dotfiles.github.io/)
- - [Andrej Mihaliak](https://github.com/mihaliak/dotfiles)
- - [Artem Sapegin](https://github.com/sapegin/dotfiles)
- - [Jan Moesen
- ](https://github.com/janmoesen/tilde)
+- [dotfiles community](http://dotfiles.github.io/)
+- [Andrej Mihaliak](https://github.com/mihaliak/dotfiles)
+- [Artem Sapegin](https://github.com/sapegin/dotfiles)
+- [Jan Moesen](https://github.com/janmoesen/tilde)
