@@ -38,6 +38,15 @@
 	newNormal = green bold
 	newHighlight = green bold 22
 
+[diff]
+    tool = vscode
+[difftool "vscode"]
+    cmd = code --wait --diff $LOCAL $REMOTE
+[merge]
+	tool = vscode
+[mergetool "vscode"]
+	cmd = code --wait $MERGED
+
 # Include local settings
 # Requires Git 1.7.10
 # git config -f ~/.gitlocal user.email "your email"
