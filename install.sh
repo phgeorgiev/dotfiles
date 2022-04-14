@@ -61,7 +61,10 @@ fi
 
 . "$source_dir/setup/brew.sh"
 
-#Install Oh My Zsh
+# Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Install Oh My Zsh
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 # Install powerlevel10k theme
