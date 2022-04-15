@@ -53,6 +53,7 @@ $dry_run brew install --cask --appdir="/Applications" visual-studio-code
 $dry_run brew install --cask --appdir="/Applications" iterm2
 $dry_run brew install --cask --appdir="/Applications" 1password
 $dry_run brew install --cask --appdir="/Applications" figma
+$dry_run brew install --cask --appdir="/Applications" notion
 
 echo
 echo "${green}Success! Cask packages installed.${normal}"
