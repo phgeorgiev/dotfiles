@@ -13,7 +13,7 @@ git clone https://github.com/phgeorgiev/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 chmod +x install.sh
 ./install.sh
-./bin/dotsync
+./bin/dotsync link
 ```
 
 ### Local Git identity
