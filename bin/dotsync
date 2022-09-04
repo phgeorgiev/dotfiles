@@ -10,7 +10,7 @@ import sys
 import glob
 import shutil
 
-SOURCE_DIR = '~/dotfiles/dots'
+SOURCE_DIR = os.path.abspath(os.path.join(os.path.realpath(__file__), '..', '..', 'dots'))
 COMMANDS_LIST = ['link', 'update', 'clean']
 
 class bcolors:
