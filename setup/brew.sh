@@ -39,6 +39,7 @@ echo "${green}Success! Packages installed.${normal}"
 sleep 1
 
 title "Installing cask packages..."
+$dry_run brew install --cask --appdir="/Applications" google-chrome
 $dry_run brew install --cask --appdir="/Applications" quicklook-json
 $dry_run brew install --cask --appdir="/Applications" syntax-highlight
 $dry_run brew install --cask --appdir="/Applications" qlmarkdown
