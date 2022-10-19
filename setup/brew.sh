@@ -31,6 +31,7 @@ $dry_run brew install gitui
 $dry_run brew install composer
 $dry_run brew install diff-so-fancy
 $dry_run brew install git-friendly/git-friendly/git-friendly
+$dry_run brew install go@1.19
 
 echo
 echo "${green}Success! Packages installed.${normal}"
