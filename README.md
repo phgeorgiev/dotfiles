@@ -41,8 +41,8 @@ Usage: dotsync <command>
 Commands:
     help             This help message
     link             Link dot files from dots folder to ~
-    update           Update packages and pkg managers (brew, composer)
-    clean            Clean up caches (brew, composer)
+    update           Update packages
+    clean            Clean up caches
 ```
 
 ## Credits

@@ -69,19 +69,17 @@ def link():
 def update():
     os.system("brew update")
     os.system("brew upgrade")
-    os.system("composer self-update")
 
 def clean():
     os.system("brew cleanup")
-    os.system("composer clear-cache")
 
 def usage():
     print("Usage: dotsync <command>")
     print("Commands:")
     print("   help             This help message")
     print("   link             Link dot files from dots folder to ~")
-    print("   update           Update packages and pkg managers (brew, commposer)")
-    print("   clean            Clean up caches (brew, composer)")
+    print("   update           Update packages")
+    print("   clean            Clean up caches")
 
 def main(argv):
     if not argv[1:] or argv[1] not in COMMANDS_LIST:
