@@ -30,6 +30,7 @@ $dry_run brew install zsh-syntax-highlighting
 $dry_run brew install diff-so-fancy
 $dry_run brew install git-friendly/git-friendly/git-friendly
 $dry_run brew install go@1.19
+$dry_run brew install openjdk@19
 
 echo
 echo "${green}Success! Packages installed.${normal}"
