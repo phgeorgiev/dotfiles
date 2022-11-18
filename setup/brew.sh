@@ -56,6 +56,7 @@ $dry_run brew install --cask --appdir="/Applications" iterm2
 $dry_run brew install --cask --appdir="/Applications" 1password
 $dry_run brew install --cask --appdir="/Applications" figma
 $dry_run brew install --cask --appdir="/Applications" notion
+$dry_run brew install --cask --appdir="/Applications" fleet
 
 echo
 echo "${green}Success! Cask packages installed.${normal}"
