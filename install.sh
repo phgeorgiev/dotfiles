@@ -61,6 +61,9 @@ fi
 
 . "$source_dir/setup/brew.sh"
 
+echo "For the system Java wrappers to find this JDK, symlink it with"
+sudo ln -sfn /opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
+
 title "Install Rust"
 if [ $is_dry_run == false ] ; then
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh

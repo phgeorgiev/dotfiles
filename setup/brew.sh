@@ -23,14 +23,14 @@ $dry_run brew install git
 $dry_run brew install git-extras
 $dry_run brew install gh
 $dry_run brew install gitui
-$dry_run brew install node
+$dry_run brew install node@18
 $dry_run brew install wifi-password
 $dry_run brew install zsh
 $dry_run brew install zsh-syntax-highlighting
 $dry_run brew install diff-so-fancy
 $dry_run brew install git-friendly/git-friendly/git-friendly
 $dry_run brew install go@1.19
-$dry_run brew install openjdk@19
+$dry_run brew install openjdk@17
 
 echo
 echo "${green}Success! Packages installed.${normal}"
