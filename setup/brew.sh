@@ -40,7 +40,6 @@ echo "${green}Success! Packages installed.${normal}"
 sleep 1
 
 title "Installing cask packages..."
-$dry_run brew install --cask --appdir="/Applications" google-chrome
 $dry_run brew install --cask --appdir="/Applications" quicklook-json
 $dry_run brew install --cask --appdir="/Applications" syntax-highlight
 $dry_run brew install --cask --appdir="/Applications" qlmarkdown
@@ -58,6 +57,7 @@ $dry_run brew install --cask --appdir="/Applications" 1password
 $dry_run brew install --cask --appdir="/Applications" figma
 $dry_run brew install --cask --appdir="/Applications" notion
 $dry_run brew install --cask --appdir="/Applications" fleet
+$dry_run brew install --cask --appdir="/Applications" firefox
 
 echo
 echo "${green}Success! Cask packages installed.${normal}"
