@@ -18,6 +18,7 @@ $dry_run brew upgrade --all
 
 title "Installing packages..."
 $dry_run brew install tree
+$dry_run brew install neofetch
 $dry_run brew install htop
 $dry_run brew install wget
 $dry_run brew install git
