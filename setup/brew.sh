@@ -59,6 +59,7 @@ $dry_run brew install --cask --appdir="/Applications" figma
 $dry_run brew install --cask --appdir="/Applications" notion
 $dry_run brew install --cask --appdir="/Applications" fleet
 $dry_run brew install --cask --appdir="/Applications" firefox
+$dry_run brew install --cask --appdir="/Applications" amethyst
 
 echo
 echo "${green}Success! Cask packages installed.${normal}"
