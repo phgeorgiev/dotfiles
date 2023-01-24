@@ -60,6 +60,7 @@ $dry_run brew install --cask --appdir="/Applications" notion
 $dry_run brew install --cask --appdir="/Applications" fleet
 $dry_run brew install --cask --appdir="/Applications" firefox
 $dry_run brew install --cask --appdir="/Applications" amethyst
+$dry_run brew install --cask --appdir="/Applications" sourcetree
 
 echo
 echo "${green}Success! Cask packages installed.${normal}"
