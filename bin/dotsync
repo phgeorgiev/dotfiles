@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 """
-Dotfiles syncronization.
+Dotfiles synchronization.
 Based on https://gist.github.com/490016
 """
 
