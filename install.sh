@@ -79,5 +79,10 @@ if [ $is_dry_run == false ] ; then
 	git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
 fi
 
+title "Install TPM"
+if [ $is_dry_run == false ] ; then
+	git clone --depth=1 https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+fi
+
 echo
 echo "${green}All done!${normal}"

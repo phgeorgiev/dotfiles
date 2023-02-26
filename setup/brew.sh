@@ -34,6 +34,7 @@ $dry_run brew install git-friendly/git-friendly/git-friendly
 $dry_run brew install go@1.19
 $dry_run brew install openjdk@17
 $dry_run brew install yarn
+$dry_run brew install tmux
 
 echo
 echo "${green}Success! Packages installed.${normal}"
