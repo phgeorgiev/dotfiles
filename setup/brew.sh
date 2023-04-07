@@ -35,6 +35,7 @@ $dry_run brew install go@1.19
 $dry_run brew install openjdk@17
 $dry_run brew install yarn
 $dry_run brew install tmux
+$dry_run brew install php@8.2
 
 echo
 echo "${green}Success! Packages installed.${normal}"
