@@ -63,6 +63,7 @@ $dry_run brew install --cask --appdir="/Applications" firefox
 $dry_run brew install --cask --appdir="/Applications" sourcetree
 $dry_run brew install --cask --appdir="/Applications" discord
 $dry_run brew install --cask --appdir="/Applications" obsidian
+$dry_run brew install --cask --appdir="/Applications" microsoft-teams
 
 echo
 echo "${green}Success! Cask packages installed.${normal}"
