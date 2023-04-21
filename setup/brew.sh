@@ -36,6 +36,7 @@ $dry_run brew install openjdk@17
 $dry_run brew install yarn
 $dry_run brew install tmux
 $dry_run brew install php@8.2
+$dry_run brew install symfony-cli/tap/symfony-cli
 
 echo
 echo "${green}Success! Packages installed.${normal}"
