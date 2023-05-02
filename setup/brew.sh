@@ -47,6 +47,7 @@ $dry_run brew install --cask --appdir="/Applications" insomnia
 $dry_run brew install --cask --appdir="/Applications" sequel-ace
 $dry_run brew install --cask --appdir="/Applications" visual-studio-code
 $dry_run brew install --cask --appdir="/Applications" intellij-idea
+$dry_run brew install --cask --appdir="/Applications" phpstom
 $dry_run brew install --cask --appdir="/Applications" iterm2
 $dry_run brew install --cask --appdir="/Applications" 1password
 $dry_run brew install --cask --appdir="/Applications" figma
