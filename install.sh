@@ -7,25 +7,27 @@ brown=$(tput setaf 3)
 normal=$(tput sgr0)
 
 title() {
-  echo
-  echo "${bold}==> $1${normal}"
-  echo
+	echo
+	echo "${bold}==> $1${normal}"
+	echo
 }
 
 dry() {
-  echo "${brown}$@${normal}" | indent
+	echo "${brown}$@${normal}" | indent
 }
 
 indent() {
-  sed 's/^/  /'
+	sed 's/^/  /'
 }
 
 function usage {
-	echo "Usage: $(basename "$0") [ --dry-run ]"
+	echo "Usage: $(basename "$0") [ --dry-run --install ]"
+	echo "	--install for installing brew packages"
 }
 
 is_dry_run=false
 dry_run=
+install=false
 target_dir="$HOME"
 while (($#)); do
 	case "$1" in
@@ -36,6 +38,9 @@ while (($#)); do
 		--help)
 			usage;
 			exit 0;
+			;;
+		--install)
+			install=true
 			;;
 		*)
 			[ "$1" = '--' ] && shift
@@ -59,14 +64,26 @@ if [ $is_dry_run == false ] ; then
     echo 'Asking for administrator password upfront\n' && sudo -v
 fi
 
-. "$source_dir/setup/brew.sh"
+# Install brew
+if test ! $(which brew); then
+    title "Installing Homebrew..."
+    $dry_run /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    if test ! $(which brew); then
+        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
+fi
 
-echo "For the system Java wrappers to find this JDK, symlink it with"
-sudo ln -sfn /opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
+if [ $install == true ] ; then
+	. "$source_dir/setup/brew.sh"
 
-title "Install Rust"
-if [ $is_dry_run == false ] ; then
-	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+	echo "For the system Java wrappers to find this JDK, symlink it with"
+	sudo ln -sfn /opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
+
+	title "Install Rust"
+	if [ $is_dry_run == false ] ; then
+		curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+	fi
 fi
 
 title "Install Oh My Zsh"
