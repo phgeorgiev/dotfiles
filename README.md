@@ -13,6 +13,7 @@ git clone https://github.com/phgeorgiev/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ./install.sh
 ./bin/dotsync link
+tmux source ~/.tmux.conf
 ```
 
 ### Local Git identity
