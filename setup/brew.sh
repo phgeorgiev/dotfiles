@@ -27,9 +27,6 @@ $dry_run brew install yarn
 $dry_run brew install tmux
 $dry_run brew install php@8.2
 $dry_run brew install symfony-cli/tap/symfony-cli
-$dry_run brew install docker
-$dry_run brew install docker-compose
-$dry_run brew install lima
 
 echo
 echo "${green}Success! Packages installed.${normal}"
