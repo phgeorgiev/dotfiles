@@ -3,4 +3,4 @@ export PATH=/opt/subversion/bin:$PATH
 export PATH=/usr/local/bin:$PATH
 export PATH="$PATH:$HOME/dotfiles/bin"
 export PATH="/opt/homebrew/opt/node@18/bin:$PATH"
-export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
