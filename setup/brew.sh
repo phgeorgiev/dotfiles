@@ -29,6 +29,7 @@ $dry_run brew install tmux
 $dry_run brew install php@8.2
 $dry_run brew install symfony-cli/tap/symfony-cli
 $dry_run brew install kubernetes-cli
+$dry_run brew install k9s
 $dry_run brew install minikube
 echo
 echo "${green}Success! Packages installed.${normal}"
