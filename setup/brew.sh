@@ -15,7 +15,7 @@ $dry_run brew install git
 $dry_run brew install git-extras
 $dry_run brew install gh
 $dry_run brew install gitui
-$dry_run brew install node@18
+$dry_run brew install node
 $dry_run brew install wifi-password
 $dry_run brew install zsh
 $dry_run brew install zsh-syntax-highlighting
