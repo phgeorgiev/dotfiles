@@ -62,6 +62,7 @@ $dry_run brew install --cask --appdir="/Applications" obsidian
 $dry_run brew install --cask --appdir="/Applications" microsoft-teams
 $dry_run brew install --cask --appdir="/Applications" spotify
 $dry_run brew install --cask --appdir="/Applications" logi-options-plus
+$dry_run brew install --cask --appdir="/Applications" arc
 
 echo
 echo "${green}Success! Cask packages installed.${normal}"
