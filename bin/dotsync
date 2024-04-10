@@ -5,12 +5,13 @@ Dotfiles synchronization.
 Based on https://gist.github.com/490016
 """
 
-import os
-import sys
 import glob
+import os
 import shutil
+import sys
 
 SOURCE_DIR = os.path.abspath(os.path.join(os.path.realpath(__file__), '..', '..', 'dots'))
+DOT_FILES_DIR = os.path.abspath(os.path.join(os.path.realpath(__file__), '..', '..'))
 COMMANDS_LIST = ['link', 'update', 'clean']
 
 class bcolors:
@@ -67,8 +68,8 @@ def link():
         print()
 
 def update():
-    os.system("brew update")
-    os.system("brew upgrade")
+    brew_file = os.path.join(os.path.expanduser(DOT_FILES_DIR), 'setup/brew.sh')
+    os.system(f"sh %s" % brew_file)
 
 def clean():
     os.system("brew cleanup")
@@ -78,7 +79,7 @@ def usage():
     print("Commands:")
     print("   help             This help message")
     print("   link             Link dot files from dots folder to ~")
-    print("   update           Update packages")
+    print("   update           Update brew.sh packages")
     print("   clean            Clean up caches")
 
 def main(argv):
