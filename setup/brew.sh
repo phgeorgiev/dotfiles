@@ -6,6 +6,8 @@ $dry_run brew update
 # Upgrade any already-installed formulae
 $dry_run brew upgrade --all
 
+$dry_run brew tap homebrew/cask-fonts
+
 title "Installing packages..."
 $dry_run brew install tree
 $dry_run brew install neofetch
@@ -63,6 +65,7 @@ $dry_run brew install --cask --appdir="/Applications" microsoft-teams
 $dry_run brew install --cask --appdir="/Applications" spotify
 $dry_run brew install --cask --appdir="/Applications" logi-options-plus
 $dry_run brew install --cask --appdir="/Applications" arc
+$dry_run brew install --cask --appdir="/Applications" font-jetbrains-mono-nerd-font
 
 echo
 echo "${green}Success! Cask packages installed.${normal}"
