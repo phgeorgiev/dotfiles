@@ -40,32 +40,32 @@ echo "${green}Success! Packages installed.${normal}"
 sleep 1
 
 title "Installing cask packages..."
-$dry_run brew install --cask --appdir="/Applications" quicklook-json
-$dry_run brew install --cask --appdir="/Applications" syntax-highlight
-$dry_run brew install --cask --appdir="/Applications" qlmarkdown
-$dry_run brew install --cask --appdir="/Applications" quicklook-csv
-$dry_run brew install --cask --appdir="/Applications" betterzip
-$dry_run brew install --cask --appdir="/Applications" istat-menus
-$dry_run brew install --cask --appdir="/Applications" docker
-$dry_run brew install --cask --appdir="/Applications" slack
-$dry_run brew install --cask --appdir="/Applications" hoppscotch
-$dry_run brew install --cask --appdir="/Applications" sequel-ace
-$dry_run brew install --cask --appdir="/Applications" visual-studio-code
-$dry_run brew install --cask --appdir="/Applications" intellij-idea
-$dry_run brew install --cask --appdir="/Applications" phpstorm
-$dry_run brew install --cask --appdir="/Applications" webstorm
-$dry_run brew install --cask --appdir="/Applications" iterm2
-$dry_run brew install --cask --appdir="/Applications" 1password
-$dry_run brew install --cask --appdir="/Applications" figma
-$dry_run brew install --cask --appdir="/Applications" firefox
-$dry_run brew install --cask --appdir="/Applications" sourcetree
-$dry_run brew install --cask --appdir="/Applications" discord
-$dry_run brew install --cask --appdir="/Applications" obsidian
-$dry_run brew install --cask --appdir="/Applications" microsoft-teams
-$dry_run brew install --cask --appdir="/Applications" spotify
-$dry_run brew install --cask --appdir="/Applications" logi-options-plus
-$dry_run brew install --cask --appdir="/Applications" arc
-$dry_run brew install --cask --appdir="/Applications" font-jetbrains-mono-nerd-font
+$dry_run brew install --cask quicklook-json
+$dry_run brew install --cask syntax-highlight
+$dry_run brew install --cask qlmarkdown
+$dry_run brew install --cask quicklook-csv
+$dry_run brew install --cask betterzip
+$dry_run brew install --cask istat-menus
+$dry_run brew install --cask docker
+$dry_run brew install --cask slack
+$dry_run brew install --cask hoppscotch
+$dry_run brew install --cask sequel-ace
+$dry_run brew install --cask visual-studio-code
+$dry_run brew install --cask intellij-idea
+$dry_run brew install --cask phpstorm
+$dry_run brew install --cask webstorm
+$dry_run brew install --cask iterm2
+$dry_run brew install --cask 1password
+$dry_run brew install --cask figma
+$dry_run brew install --cask firefox
+$dry_run brew install --cask sourcetree
+$dry_run brew install --cask discord
+$dry_run brew install --cask obsidian
+$dry_run brew install --cask microsoft-teams
+$dry_run brew install --cask spotify
+$dry_run brew install --cask logi-options-plus
+$dry_run brew install --cask arc
+$dry_run brew install --cask font-jetbrains-mono-nerd-font
 
 echo
 echo "${green}Success! Cask packages installed.${normal}"
