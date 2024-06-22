@@ -66,6 +66,7 @@ $dry_run brew install --cask spotify
 $dry_run brew install --cask logi-options-plus
 $dry_run brew install --cask arc
 $dry_run brew install --cask font-jetbrains-mono-nerd-font
+$dry_run brew install --cask raycast
 
 echo
 echo "${green}Success! Cask packages installed.${normal}"
