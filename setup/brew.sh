@@ -48,7 +48,7 @@ $dry_run brew install --cask betterzip
 $dry_run brew install --cask istat-menus
 $dry_run brew install --cask docker
 $dry_run brew install --cask slack
-$dry_run brew install --cask hoppscotch
+$dry_run brew install --cask insomnia
 $dry_run brew install --cask sequel-ace
 $dry_run brew install --cask visual-studio-code
 $dry_run brew install --cask intellij-idea
