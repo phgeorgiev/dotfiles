@@ -23,12 +23,12 @@ $dry_run brew install zsh
 $dry_run brew install zsh-syntax-highlighting
 $dry_run brew install diff-so-fancy
 $dry_run brew install git-friendly/git-friendly/git-friendly
-$dry_run brew install go@1.19
+$dry_run brew install go
 $dry_run brew install openjdk
 $dry_run brew install maven
 $dry_run brew install yarn
 $dry_run brew install tmux
-$dry_run brew install php@8.2
+$dry_run brew install php
 $dry_run brew install symfony-cli/tap/symfony-cli
 $dry_run brew install kubernetes-cli
 $dry_run brew install k9s
