@@ -33,6 +33,7 @@ $dry_run brew install symfony-cli/tap/symfony-cli
 $dry_run brew install kubernetes-cli
 $dry_run brew install k9s
 $dry_run brew install minikube
+$dry_run brew install skaffold
 echo
 echo "${green}Success! Packages installed.${normal}"
 
