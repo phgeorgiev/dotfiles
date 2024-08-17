@@ -102,7 +102,7 @@
   "Custom Command" : "No",
   "ASCII Anti Aliased" : true,
   "Non Ascii Font" : "Monaco 12",
-  "Vertical Spacing" : 1.2,
+  "Vertical Spacing" : 1.1000000000000001,
   "Use Bold Font" : true,
   "Option Key Sends" : 0,
   "Selected Text Color" : {
@@ -414,13 +414,7 @@
     "Red Component" : 0.73333334922790527,
     "Blue Component" : 0.73333334922790527
   },
-  "Ansi 0 Color" : {
-    "Green Component" : 0,
-    "Red Component" : 0,
-    "Blue Component" : 0
-  },
-  "Guid" : "6F53B5C9-6DC9-4704-9DA2-51904AF81849",
-  "Horizontal Spacing" : 1,
+  "Transparency" : 0,
   "Ansi 1 Color" : {
     "Green Component" : 0.3333333432674408,
     "Red Component" : 1,
@@ -431,6 +425,12 @@
     "Red Component" : 0.31372549019607843,
     "Blue Component" : 0.4823529411764706
   },
+  "Ansi 0 Color" : {
+    "Green Component" : 0,
+    "Red Component" : 0,
+    "Blue Component" : 0
+  },
+  "Custom Directory" : "No",
   "Right Option Key Sends" : 0,
   "Use Non-ASCII Font" : false,
   "Ansi 6 Color" : {
@@ -446,6 +446,6 @@
     "Alpha Component" : 1,
     "Green Component" : 0.35915294289588928
   },
-  "Transparency" : 0,
-  "Custom Directory" : "No"
+  "Guid" : "45836D78-D8D8-4E66-8166-8F9855018CE3",
+  "Horizontal Spacing" : 1
 }
