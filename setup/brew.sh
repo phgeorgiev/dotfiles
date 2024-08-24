@@ -9,6 +9,7 @@ $dry_run brew upgrade --all
 $dry_run brew tap homebrew/cask-fonts
 
 title "Installing packages..."
+$dry_run brew install yq
 $dry_run brew install tree
 $dry_run brew install neofetch
 $dry_run brew install htop
