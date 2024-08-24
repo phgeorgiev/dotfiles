@@ -1,1 +1,2 @@
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
+alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
