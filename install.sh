@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ ! -f ./install.sh ]; then
+	echo "You need to execute this script from the root of your dotfiles"
+	exit 1
+fi
+
 # Define output colors
 bold=$(tput bold)
 green=$(tput setaf 2)
@@ -55,11 +60,6 @@ done
 
 $is_dry_run && $dry_run "Dry run mode. Not actually executing anything."
 
-source_dir="$(
-	cd "$(dirname "$0")" >/dev/null || exit
-	pwd
-)"
-
 # Ask for the administrator password upfront
 if [ $is_dry_run == false ]; then
 	echo 'Asking for administrator password upfront' && sudo -v
@@ -76,7 +76,7 @@ if test ! "$(which brew)"; then
 fi
 
 if [ $install == true ]; then
-	. "$source_dir/setup/brew.sh"
+	. "./setup/brew.sh"
 
 	echo "For the system Java wrappers to find this JDK, symlink it with"
 	sudo ln -sfn /opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
@@ -112,7 +112,7 @@ if test ! "$(which composer)"; then
 
 	$dry_run sudo mv composer.phar /usr/local/bin/composer
 
-	. "$source_dir/setup/composer.sh"
+	. "./setup/composer.sh"
 fi
 
 echo
