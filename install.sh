@@ -18,7 +18,7 @@ title() {
 }
 
 dry() {
-	echo "${brown}$@${normal}" | indent
+	echo "${brown}$*${normal}" | indent
 }
 
 indent() {
@@ -27,6 +27,7 @@ indent() {
 
 function usage {
 	echo "Usage: $(basename "$0") [ --dry-run --install ]"
+	echo "	--dry-run for simulating the installation"
 	echo "	--install for installing brew packages"
 }
 
