@@ -69,9 +69,10 @@ fi
 if test ! "$(which brew)"; then
 	title "Installing Homebrew..."
 	$dry_run /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	if test ! "$(which brew)"; then
-		echo eval "$(/opt/homebrew/bin/brew shellenv)" >>~/.zprofile
+	if [[ $(uname -m) == 'arm64' ]]; then
 		eval "$(/opt/homebrew/bin/brew shellenv)"
+	else
+		eval "$(/usr/local/bin/brew shellenv)"
 	fi
 fi
 
