@@ -16,6 +16,8 @@ cd ~/dotfiles
 tmux source ~/.tmux.conf
 ```
 
+Press prefix + I (capital i, as in Install) to fetch the plugin.
+
 ### Local Git identity
 
 ```bash
@@ -26,12 +28,7 @@ git config -f ~/.gitlocal user.name "Your Name"
 ## Install iTerm color scheme
 
 - Launch iTerm
-- Type CMD+i
-- Navigate to Colors tab
-- Click on Load Presets
-- Click on Import
-- Select the .itermcolors file located in `iterm` folder
-- Click on Load Presets and choose a color scheme
+- Import the `Default.json` from `~/dotfiles/iterm` folder
 
 ## The `dotsync` command
 
