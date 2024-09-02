@@ -13,10 +13,11 @@ git clone https://github.com/phgeorgiev/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ./install.sh
 ./bin/dotsync link
+# type this in terminal if tmux is already running
 tmux source ~/.tmux.conf
 ```
 
-Press prefix + I (capital i, as in Install) to fetch the plugin.
+Press `prefix` + <kbd>I</kbd> (capital i, as in **I**nstall) to fetch the plugin.
 
 ### Local Git identity
 
@@ -28,7 +29,7 @@ git config -f ~/.gitlocal user.name "Your Name"
 ## Install iTerm color scheme
 
 - Launch iTerm
-- Import the `Default.json` from `~/dotfiles/iterm` folder
+- Import `Default.json` from `~/dotfiles/iterm` folder
 
 ## The `dotsync` command
 
