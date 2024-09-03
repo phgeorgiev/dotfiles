@@ -59,6 +59,7 @@ $dry_run brew install --cask insomnia
 $dry_run brew install --cask visual-studio-code
 $dry_run brew install --cask intellij-idea
 $dry_run brew install --cask phpstorm
+$dry_run brew install --cask tableplus
 $dry_run brew install --cask figma
 $dry_run brew install --cask firefox
 $dry_run brew install --cask discord
