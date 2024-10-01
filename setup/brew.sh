@@ -28,6 +28,7 @@ $dry_run brew install diff-so-fancy
 $dry_run brew install git-friendly/git-friendly/git-friendly
 $dry_run brew install go
 $dry_run brew install openjdk@21
+$dry_run brew install lazydocker
 $dry_run brew install maven
 $dry_run brew install php
 $dry_run brew install symfony-cli/tap/symfony-cli
