@@ -19,6 +19,7 @@ $dry_run brew install htop
 $dry_run brew install wget
 $dry_run brew install git
 $dry_run brew install git-extras
+$dry_run brew install git-delta
 $dry_run brew install gh
 $dry_run brew install lazygit
 $dry_run brew install node
