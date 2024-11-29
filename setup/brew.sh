@@ -12,6 +12,7 @@ title "Installing packages..."
 $dry_run brew install zsh
 $dry_run brew install zsh-syntax-highlighting
 $dry_run brew install tmux
+$dry_run brew install jq
 $dry_run brew install yq
 $dry_run brew install tree
 $dry_run brew install neofetch
