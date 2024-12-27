@@ -39,10 +39,11 @@ $dry_run brew install kubernetes-cli
 $dry_run brew install k9s
 $dry_run brew install minikube
 $dry_run brew install skaffold
+$dry_run brew install ghostty
 echo
 echo "${green}Success! Packages installed.${normal}"
 
-# Waith a bit before moving on...
+# Wait a bit before moving on...
 sleep 1
 
 title "Installing cask packages..."

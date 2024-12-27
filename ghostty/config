@@ -1,0 +1,6 @@
+font-family = "JetBrainsMono NFM Regular"
+font-family-bold = "JetBrainsMono NFM Bold"
+font-family-italic = "JetBrainsMono NFM Italic"
+font-family-bold-italic = "JetBrainsMono NFM Bold Italic"
+font-size = 14
+theme = "Dracula"
