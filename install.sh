@@ -89,6 +89,12 @@ if [ $install == true ]; then
 	fi
 fi
 
+# Link files
+if command -v stow &> /dev/null; then
+	stow dots
+	stow -t ~/.config .
+fi
+
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
 	title "Install Oh My Zsh"
 	$dry_run sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -96,7 +102,7 @@ fi
 
 if [ ! -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
 	title "Install powerlevel10k theme"
-	$dry_run git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
+	$dry_run git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$HOME/.oh-my-zsh/custom/themes/powerlevel10k"
 fi
 
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then

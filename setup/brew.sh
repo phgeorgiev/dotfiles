@@ -9,6 +9,7 @@ $dry_run brew upgrade --all
 $dry_run brew tap homebrew/cask-fonts
 
 title "Installing packages..."
+$dry_run brew install stow
 $dry_run brew install zsh
 $dry_run brew install zsh-syntax-highlighting
 $dry_run brew install tmux
