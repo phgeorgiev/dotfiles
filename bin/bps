@@ -1,0 +1,68 @@
+#!/bin/bash
+
+available_packages=("openjdk" "php" "node")
+
+availablePackages() {
+    echo "Available packages:"
+    output=""
+    for package in "${available_packages[@]}"; do
+        line="$(brew ls --versions | grep "^${package}[ @]" | sed 's/[[:space:]]/\t/g' | sed 's/^/  /')"
+        output+="${line}\n"
+    done
+    echo -e "$output" | column -t -s $'\t'
+}
+
+help() {
+    echo "Usage: $(basename "$0") [command]"
+    echo ""
+    echo "Brew package version switcher"
+    echo ""
+    echo "Available command:"
+    echo "  list        list available packages and versions"
+    echo "  <package>   switch package to given version"
+    echo "              <package>[@<version>]"
+    echo "              Example:"
+    echo "              php     switching to latest available php version"
+    echo "              php@8.3 switching to php 8.3"
+    echo ""
+    availablePackages
+}
+
+if [[ $# -ne 1 ]]; then
+  help
+  exit 2
+fi
+
+if [[ "$1" == "list" ]]; then
+    availablePackages
+    exit 0
+fi
+
+PACKAGE_NAME="${1//@*}"
+VERSION="$1"
+
+# This is to prevent unlinking and linking packages that are not managed by this script
+found=false
+for pkg in "${available_packages[@]}"; do
+  if [[ "$pkg" == "$PACKAGE_NAME" ]]; then
+    found=true
+    break
+  fi
+done
+
+if ! $found; then
+  echo "$PACKAGE_NAME is not in the list."
+  exit 1
+fi
+
+if ! brew list "$VERSION" &>/dev/null; then
+    echo "${VERSION} is not installed."
+    exit 1
+fi
+
+echo "Unlink all versions:"
+for version in $(brew ls --versions | grep "^${PACKAGE_NAME}[ @]" | sed 's/ .*//');do
+    brew unlink "$version"
+done
+
+brew link "$VERSION"

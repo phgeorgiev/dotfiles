@@ -22,6 +22,7 @@ brew install git-extras
 brew install git-delta
 brew install gh
 brew install lazygit
+brew install node@22
 brew install node
 brew install yarn
 brew install wifi-password
@@ -29,8 +30,11 @@ brew install diff-so-fancy
 brew install git-friendly/git-friendly/git-friendly
 brew install go
 brew install openjdk@21
+brew install openjdk@17
+brew install openjdk
 brew install lazydocker
 brew install maven
+brew install php@8.3
 brew install php
 brew install symfony-cli/tap/symfony-cli
 brew install kubernetes-cli
