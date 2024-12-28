@@ -90,10 +90,7 @@ if [ $install == true ]; then
 fi
 
 # Link files
-if command -v stow &> /dev/null; then
-	stow dots
-	stow -t ~/.config .
-fi
+. "./bin/dotsync"
 
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
 	title "Install Oh My Zsh"

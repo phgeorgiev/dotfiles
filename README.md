@@ -6,6 +6,8 @@ Personal OSX dotfiles
 
 ## Install
 
+For initial installation, run the following commands in the terminal.
+
 ```bash
 xcode-select --install
 
@@ -23,6 +25,14 @@ Press `prefix` + <kbd>I</kbd> (capital i, as in **I**nstall) to fetch the plugin
 ```bash
 git config -f ~/.gitlocal user.email "your email"
 git config -f ~/.gitlocal user.name "Your Name"
+```
+
+## The `dotsync` command
+
+Syncing dotfiles after the initial installation is done with the `dotsync` command.
+
+```console
+dotsync
 ```
 
 ## Credits
