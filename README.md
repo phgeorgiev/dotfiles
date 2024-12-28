@@ -2,7 +2,7 @@
 
 Personal OSX dotfiles
 
-![iTerm2.app](https://raw.githubusercontent.com/phgeorgiev/dotfiles/master/screenshot.png)
+![image](https://raw.githubusercontent.com/phgeorgiev/dotfiles/refs/heads/master/screenshot.png)
 
 ## Install
 
