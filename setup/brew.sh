@@ -1,45 +1,43 @@
 #!/bin/bash
 
+green=$(tput setaf 2)
+normal=$(tput sgr0)
+
 # Make sure we’re using the latest Homebrew
-$dry_run brew update
-
-# Upgrade any already-installed formulae
-$dry_run brew upgrade --all
-
-$dry_run brew tap homebrew/cask-fonts
+brew update
 
 title "Installing packages..."
-$dry_run brew install stow
-$dry_run brew install zsh
-$dry_run brew install zsh-syntax-highlighting
-$dry_run brew install tmux
-$dry_run brew install jq
-$dry_run brew install yq
-$dry_run brew install tree
-$dry_run brew install neofetch
-$dry_run brew install htop
-$dry_run brew install wget
-$dry_run brew install git
-$dry_run brew install git-extras
-$dry_run brew install git-delta
-$dry_run brew install gh
-$dry_run brew install lazygit
-$dry_run brew install node
-$dry_run brew install yarn
-$dry_run brew install wifi-password
-$dry_run brew install diff-so-fancy
-$dry_run brew install git-friendly/git-friendly/git-friendly
-$dry_run brew install go
-$dry_run brew install openjdk@21
-$dry_run brew install lazydocker
-$dry_run brew install maven
-$dry_run brew install php
-$dry_run brew install symfony-cli/tap/symfony-cli
-$dry_run brew install kubernetes-cli
-$dry_run brew install k9s
-$dry_run brew install minikube
-$dry_run brew install skaffold
-$dry_run brew install ghostty
+brew install stow
+brew install zsh
+brew install zsh-syntax-highlighting
+brew install tmux
+brew install jq
+brew install yq
+brew install tree
+brew install neofetch
+brew install htop
+brew install wget
+brew install git
+brew install git-extras
+brew install git-delta
+brew install gh
+brew install lazygit
+brew install node
+brew install yarn
+brew install wifi-password
+brew install diff-so-fancy
+brew install git-friendly/git-friendly/git-friendly
+brew install go
+brew install openjdk@21
+brew install lazydocker
+brew install maven
+brew install php
+brew install symfony-cli/tap/symfony-cli
+brew install kubernetes-cli
+brew install k9s
+brew install minikube
+brew install skaffold
+brew install ghostty
 echo
 echo "${green}Success! Packages installed.${normal}"
 
@@ -47,28 +45,28 @@ echo "${green}Success! Packages installed.${normal}"
 sleep 1
 
 title "Installing cask packages..."
-$dry_run brew install --cask 1password
-$dry_run brew install --cask arc
-$dry_run brew install --cask raycast
-$dry_run brew install --cask slack
-$dry_run brew install --cask font-jetbrains-mono-nerd-font
-$dry_run brew install --cask docker
-$dry_run brew install --cask quicklook-json
-$dry_run brew install --cask syntax-highlight
-$dry_run brew install --cask qlmarkdown
-$dry_run brew install --cask quicklook-csv
-$dry_run brew install --cask betterzip
-$dry_run brew install --cask istat-menus
-$dry_run brew install --cask insomnia
-$dry_run brew install --cask visual-studio-code
-$dry_run brew install --cask intellij-idea
-$dry_run brew install --cask phpstorm
-$dry_run brew install --cask tableplus
-$dry_run brew install --cask figma
-$dry_run brew install --cask firefox
-$dry_run brew install --cask discord
-$dry_run brew install --cask obsidian
-$dry_run brew install --cask logi-options-plus
+brew install --cask raycast
+brew install --cask 1password
+brew install --cask arc
+brew install --cask slack
+brew install --cask docker
+brew install --cask quicklook-json
+brew install --cask syntax-highlight
+brew install --cask qlmarkdown
+brew install --cask quicklook-csv
+brew install --cask betterzip
+brew install --cask istat-menus
+brew install --cask insomnia
+brew install --cask visual-studio-code
+brew install --cask intellij-idea
+brew install --cask phpstorm
+brew install --cask tableplus
+brew install --cask figma
+brew install --cask firefox
+brew install --cask discord
+brew install --cask obsidian
+brew install --cask logi-options-plus
+brew install --cask font-jetbrains-mono-nerd-font
 
 echo
 echo "${green}Success! Cask packages installed.${normal}"
