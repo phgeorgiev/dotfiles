@@ -51,7 +51,6 @@ $dry_run brew install --cask 1password
 $dry_run brew install --cask arc
 $dry_run brew install --cask raycast
 $dry_run brew install --cask slack
-$dry_run brew install --cask iterm2
 $dry_run brew install --cask font-jetbrains-mono-nerd-font
 $dry_run brew install --cask docker
 $dry_run brew install --cask quicklook-json
