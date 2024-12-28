@@ -4,3 +4,5 @@ font-family-italic = "JetBrainsMono NFM Italic"
 font-family-bold-italic = "JetBrainsMono NFM Bold Italic"
 font-size = 14
 theme = "Dracula"
+cursor-style-blink = true
+shell-integration = zsh
