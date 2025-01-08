@@ -49,6 +49,7 @@ echo "${green}Success! Packages installed.${normal}"
 sleep 1
 
 title "Installing cask packages..."
+brew install --cask font-jetbrains-mono-nerd-font
 brew install --cask raycast
 brew install --cask 1password
 brew install --cask arc
@@ -70,7 +71,7 @@ brew install --cask firefox
 brew install --cask discord
 brew install --cask obsidian
 brew install --cask logi-options-plus
-brew install --cask font-jetbrains-mono-nerd-font
+brew install --cask proxyman
 
 echo
 echo "${green}Success! Cask packages installed.${normal}"
