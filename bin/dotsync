@@ -35,7 +35,7 @@ echo "Linking config files"
 echo ""
 
 stow -t ~/.config -D . --verbose=2
-stow -t ~/.config . --verbose=2
+stow -t ~/.config . --no-folding --verbose=2
 
 echo ""
 echo "Done!"
