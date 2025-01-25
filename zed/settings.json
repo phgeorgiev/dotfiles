@@ -23,6 +23,7 @@
   "notification_panel": {
     "dock": "left"
   },
+  "unnecessary_code_fade": 0.5,
   "vim_mode": true,
   "autosave": "on_focus_change",
   "preview_tabs": {
@@ -46,6 +47,7 @@
     "catppuccin": true,
     "git-firefly": true,
     "html": true,
-    "php": true
+    "php": true,
+    "make": true
   }
 }
