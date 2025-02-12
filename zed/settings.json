@@ -7,6 +7,11 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "languages": {
+    "TypeScript": {
+      "tab_size": 4
+    }
+  },
   "base_keymap": "JetBrains",
   "indent_guides": {
     "enabled": true,
@@ -30,8 +35,8 @@
     "enabled": false
   },
   "relative_line_numbers": true,
-  "ui_font_size": 14,
-  "buffer_font_size": 14,
+  "ui_font_size": 15,
+  "buffer_font_size": 15,
   "buffer_line_height": "comfortable",
   "ui_font_family": "JetBrainsMono Nerd Font",
   "buffer_font_family": "JetBrainsMono Nerd Font",
