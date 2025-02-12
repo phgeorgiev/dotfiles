@@ -9,7 +9,19 @@
 {
   "languages": {
     "TypeScript": {
-      "tab_size": 4
+      "tab_size": 4,
+      "formatter": {
+        "code_actions_on_format": {
+          "source.fixAll.eslint": true
+        }
+      }
+    },
+    "JavaScript": {
+      "formatter": {
+        "code_actions_on_format": {
+          "source.fixAll.eslint": true
+        }
+      }
     }
   },
   "base_keymap": "JetBrains",
