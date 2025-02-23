@@ -10,17 +10,13 @@
   "languages": {
     "TypeScript": {
       "tab_size": 4,
-      "formatter": {
-        "code_actions_on_format": {
-          "source.fixAll.eslint": true
-        }
+      "code_actions_on_format": {
+        "source.fixAll.eslint": true
       }
     },
     "JavaScript": {
-      "formatter": {
-        "code_actions_on_format": {
-          "source.fixAll.eslint": true
-        }
+      "code_actions_on_format": {
+        "source.fixAll.eslint": true
       }
     }
   },
