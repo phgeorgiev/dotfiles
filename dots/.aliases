@@ -1,4 +1,4 @@
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias local_ip="ipconfig getifaddr en0"
 alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
-alias php-fix='g diff HEAD --name-only --diff-filter=M | xargs --no-run-if-empty php-cs-fixer fix'
+alias php-fix='g diff HEAD --name-only --diff-filter=MA | xargs --no-run-if-empty php-cs-fixer fix'
