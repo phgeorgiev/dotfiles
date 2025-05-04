@@ -26,12 +26,12 @@
     "coloring": "indent_aware"
   },
   "project_panel": {
-    "dock": "right",
+    "dock": "left",
     "git_status": true
   },
   "outline_panel": {
     "button": true,
-    "dock": "right"
+    "dock": "left"
   },
   "notification_panel": {
     "dock": "left"
