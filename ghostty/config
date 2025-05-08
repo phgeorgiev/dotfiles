@@ -1,8 +1,16 @@
-font-family = "JetBrainsMono NFM Regular"
-font-family-bold = "JetBrainsMono NFM Bold"
-font-family-italic = "JetBrainsMono NFM Italic"
-font-family-bold-italic = "JetBrainsMono NFM Bold Italic"
+font-family = JetBrainsMono NFM Regular
+font-family-bold = JetBrainsMono NFM Bold
+font-family-italic = JetBrainsMono NFM Italic
+font-family-bold-italic = JetBrainsMono NFM Bold Italic
 font-size = 14
-theme = "Dracula"
+theme = catppuccin-mocha
 cursor-style-blink = true
 shell-integration = zsh
+
+keybind = ctrl+a>-=new_split:down
+keybind = ctrl+a>shift+\=new_split:right
+keybind = ctrl+a>x=close_surface
+
+keybind = super+r=reload_config
+
+window-save-state = always
