@@ -2,6 +2,11 @@
 
 available_packages=("openjdk" "php" "node")
 
+getVersions() {
+    local package_name="$1"
+    brew ls --versions | grep "^${package_name}[ @]" | sed 's/ .*//'
+}
+
 availablePackages() {
     echo "Available packages:"
     output=""
@@ -13,9 +18,14 @@ availablePackages() {
 }
 
 help() {
-    echo "Usage: $(basename "$0") [command]"
+    echo "Usage: $(basename "$0") [options] [command]"
     echo ""
     echo "Brew package version switcher"
+    echo ""
+    echo "By default, shows what would be done and asks for confirmation."
+    echo ""
+    echo "Options:"
+    echo "  -f, --force     execute without confirmation"
     echo ""
     echo "Available command:"
     echo "  list        list available packages and versions"
@@ -25,17 +35,33 @@ help() {
     echo "              php     switching to latest available php version"
     echo "              php@8.3 switching to php 8.3"
     echo ""
-    availablePackages
 }
+
+FORCE=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -f|--force)
+            FORCE=true
+            shift
+            ;;
+        -h|--help)
+            help
+            exit 0
+            ;;
+        list)
+            availablePackages
+            exit 0
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
 
 if [[ $# -ne 1 ]]; then
   help
   exit 2
-fi
-
-if [[ "$1" == "list" ]]; then
-    availablePackages
-    exit 0
 fi
 
 PACKAGE_NAME="${1//@*}"
@@ -60,9 +86,25 @@ if ! brew list "$VERSION" &>/dev/null; then
     exit 1
 fi
 
-echo "Unlink all versions:"
-for version in $(brew ls --versions | grep "^${PACKAGE_NAME}[ @]" | sed 's/ .*//');do
+if [[ "$FORCE" == "false" ]]; then
+    echo "Unlink all versions:"
+    for version in $(getVersions "$PACKAGE_NAME");do
+        echo "Would unlink: $version"
+    done
+    echo "Would link: $VERSION"
+    echo ""
+
+    read -p "Do you want to proceed with these changes? (y/N): " -n 1 -r
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "Operation cancelled."
+        exit 0
+    fi
+
+    echo "Executing changes..."
+fi
+
+for version in $(getVersions "$PACKAGE_NAME");do
     brew unlink "$version"
 done
-
 brew link "$VERSION"
