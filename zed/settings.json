@@ -53,11 +53,13 @@
     "light": "Catppuccin Latte - No Italics",
     "dark": "Catppuccin Mocha - No Italics"
   },
+  "icon_theme": "Catppuccin Mocha",
   "terminal": {
     "font_family": "JetBrainsMono Nerd Font"
   },
   "auto_install_extensions": {
     "catppuccin": true,
+    "catppuccin-icons": true,
     "git-firefly": true,
     "html": true,
     "php": true,
