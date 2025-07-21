@@ -32,7 +32,7 @@ brew install go
 brew install openjdk@21
 brew install openjdk@17
 brew install openjdk
-brew install lazydocker
+brew install ctop
 brew install maven
 brew install php@8.3
 brew install php
