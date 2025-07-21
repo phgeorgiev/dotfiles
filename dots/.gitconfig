@@ -16,6 +16,9 @@ mergeoptions = --no-edit
 excludesfile = ~/.gitignore
 quotepath = false
 
+[checkout]
+defaultRemote = origin
+
 [interactive]
 diffFilter = delta --color-only
 
