@@ -15,6 +15,7 @@ readonly BOLD='\033[1m'
 readonly SCRIPT_NAME="dot"
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly DOTFILES_DIR
+readonly INSTALL_DIR="${DOTFILES_DIR}/install"
 
 # Helper functions
 print_header() {
@@ -34,30 +35,75 @@ print_warning() {
 }
 
 print_info() {
-    echo -e "  ${CYAN}$1${RESET}"
+    echo -e "${CYAN}$1${RESET}"
 }
 
 command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# Help command
-cmd_help() {
-    echo "Usage: dot [OPTIONS] [COMMAND]"
-    echo ""
-    echo "Dotfiles management script"
-    echo ""
-    echo "Commands:"
-    echo "  help        Show this help message"
-    echo "  stow        Manage dotfiles with GNU stow"
-    echo ""
-    echo "Options:"
-    echo "  -h, --help  Show this help message"
-    echo ""
-    echo "Examples:"
-    echo "  dot help    Display help information"
-    echo "  dot -h      Display help information"
-    echo "  dot stow    Manage dotfiles with stow"
+install_homebrew() {
+    if command_exists brew; then
+        print_success "Homebrew is already installed"
+        return 0
+    fi
+
+    print_header "Installing Homebrew"
+    print_info "This will install Homebrew package manager..."
+
+    if /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+        print_success "Homebrew installed successfully"
+
+        # Add brew to PATH for current session
+        if [[ $(uname -m) == 'arm64' ]]; then
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+        else
+            eval "$(/usr/local/bin/brew shellenv)"
+        fi
+        print_info "Added Homebrew to PATH for this session"
+    else
+        print_error "Failed to install Homebrew"
+        return 1
+    fi
+}
+
+install_packages() {
+    if ! command_exists brew; then
+        print_error "Homebrew is not installed"
+        print_info "Run 'dot init' to install Homebrew first"
+        return 1
+    fi
+
+    if [[ ! -f "${INSTALL_DIR}/Brewfile" ]]; then
+        print_warning "No Brewfile found at ${INSTALL_DIR}/Brewfile"
+        print_info "Create a Brewfile to manage packages with 'brew bundle dump'"
+        return 1
+    fi
+
+    print_header "Checking packages from Brewfile"
+    print_info "Using Brewfile at ${INSTALL_DIR}/Brewfile"
+
+    if brew bundle check --file="${INSTALL_DIR}/Brewfile"; then
+        print_success "All packages are already installed"
+    else
+        print_header "Installing missing packages from Brewfile"
+        if brew bundle --file="${INSTALL_DIR}/Brewfile"; then
+            print_success "Packages installed from Brewfile"
+        else
+            print_error "Failed to install packages from Brewfile"
+            return 1
+        fi
+    fi
+}
+
+# Init command
+cmd_init() {
+    print_header "Initializing dotfiles setup"
+
+    install_homebrew || return 1
+    install_packages || return 1
+
+    print_success "Dotfiles initialization complete! 🎉"
 }
 
 # Stow command
@@ -80,6 +126,26 @@ cmd_stow() {
         print_info "Check for conflicting files in your home directory"
         return 1
     fi
+}
+
+# Help command
+cmd_help() {
+    echo "Usage: dot [OPTIONS] [COMMAND]"
+    echo ""
+    echo "Dotfiles management script"
+    echo ""
+    echo "Commands:"
+    echo "  help        Show this help message"
+    echo "  init        Initialize dotfiles setup (install Homebrew, packages, and stow)"
+    echo "  stow        Manage dotfiles with GNU stow"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help  Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  dot help    Display help information"
+    echo "  dot -h      Display help information"
+    echo "  dot stow    Manage dotfiles with stow"
 }
 
 # Main function
@@ -105,6 +171,9 @@ main() {
     case "$cmd" in
         help)
             cmd_help
+            ;;
+        init)
+            cmd_init "$@"
             ;;
         stow)
             cmd_stow "$@"

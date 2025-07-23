@@ -47,25 +47,6 @@ done
 # Ask for the administrator password upfront
 echo 'Asking for administrator password upfront' && sudo -v
 
-# Install brew
-if test ! "$(which brew)"; then
-	title "Installing Homebrew..."
-	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	if [[ $(uname -m) == 'arm64' ]]; then
-		eval "$(/opt/homebrew/bin/brew shellenv)"
-	else
-		eval "$(/usr/local/bin/brew shellenv)"
-	fi
-
-    sh "./setup/brew.sh"
-
-	echo "For the system Java wrappers to find this JDK, symlink it with"
-	sudo ln -sfn /opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
-
-	title "Install Rust"
-	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-fi
-
 # Link files
 sh "./bin/dotsync"
 
