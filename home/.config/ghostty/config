@@ -10,7 +10,7 @@ shell-integration = zsh
 keybind = ctrl+a>-=new_split:down
 keybind = ctrl+a>shift+\=new_split:right
 keybind = ctrl+a>x=close_surface
-
 keybind = super+r=reload_config
+keybind = shift+enter=text:\n
 
 window-save-state = always

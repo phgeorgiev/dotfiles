@@ -1,0 +1,121 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# Colors for output
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[0;33m'
+readonly BLUE='\033[0;34m'
+readonly CYAN='\033[0;36m'
+readonly RESET='\033[0m'
+readonly BOLD='\033[1m'
+
+# Script metadata
+readonly SCRIPT_NAME="dot"
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly DOTFILES_DIR
+
+# Helper functions
+print_header() {
+    echo -e "\n${BOLD}${BLUE}==>${RESET} ${BOLD}$1${RESET}\n"
+}
+
+print_success() {
+    echo -e "${GREEN}✓${RESET} $1"
+}
+
+print_error() {
+    echo -e "${RED}✗${RESET} $1" >&2
+}
+
+print_warning() {
+    echo -e "${YELLOW}⚠${RESET} $1"
+}
+
+print_info() {
+    echo -e "  ${CYAN}$1${RESET}"
+}
+
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Help command
+cmd_help() {
+    echo "Usage: dot [OPTIONS] [COMMAND]"
+    echo ""
+    echo "Dotfiles management script"
+    echo ""
+    echo "Commands:"
+    echo "  help        Show this help message"
+    echo "  stow        Manage dotfiles with GNU stow"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help  Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  dot help    Display help information"
+    echo "  dot -h      Display help information"
+    echo "  dot stow    Manage dotfiles with stow"
+}
+
+# Stow command
+cmd_stow() {
+    print_header "Stowing dotfiles"
+
+    if ! command_exists stow; then
+        print_error "GNU Stow is not installed"
+        print_info "Install it first: brew install stow"
+        return 1
+    fi
+
+    print_info "Creating symlinks for dotfiles..."
+
+    if stow -R -v -d "${DOTFILES_DIR}" -t "${HOME}" home; then
+        print_success "Dotfiles stowed successfully"
+        print_info "Configuration files are now symlinked to your home directory"
+    else
+        print_error "Failed to stow dotfiles"
+        print_info "Check for conflicting files in your home directory"
+        return 1
+    fi
+}
+
+# Main function
+main() {
+    # Parse global options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -h|--help)
+                cmd_help
+                exit 0
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+
+    # Get command
+    local cmd="${1:-help}"
+    shift || true
+
+    # Execute command
+    case "$cmd" in
+        help)
+            cmd_help
+            ;;
+        stow)
+            cmd_stow "$@"
+            ;;
+        *)
+            print_error "Unknown command: $cmd"
+            echo "Run '${SCRIPT_NAME} help' for usage information"
+            exit 1
+            ;;
+    esac
+}
+
+# Run main function
+main "$@"
