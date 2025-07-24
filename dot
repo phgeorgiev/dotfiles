@@ -17,6 +17,9 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly DOTFILES_DIR
 readonly INSTALL_DIR="${DOTFILES_DIR}/install"
 
+# Configurations
+readonly LINKABLE_PACKAGES=("openjdk" "php" "node")
+
 # Helper functions
 print_header() {
     echo -e "\n${BOLD}${BLUE}==>${RESET} ${BOLD}$1${RESET}\n"
@@ -40,6 +43,40 @@ print_info() {
 
 command_exists() {
     command -v "$1" >/dev/null 2>&1
+}
+
+ask_confirmation() {
+    local default="${1:-N}"
+    local message="Do you want to proceed with these changes?"
+
+    if [[ "$default" =~ ^[Yy]$ ]]; then
+        local prompt="(Y/n)"
+        local default_regex="^[Nn]$"
+    else
+        local prompt="(y/N)"
+        local default_regex="^[Yy]$"
+    fi
+
+    read -p "$message $prompt: " -n 1 -r
+    echo ""
+
+    # If no input (just Enter), use default
+    if [[ -z "$REPLY" ]]; then
+        if [[ "$default" =~ ^[Yy]$ ]]; then
+            return 0
+        else
+            print_warning "Operation cancelled"
+            return 1
+        fi
+    fi
+
+    # Check user input
+    if [[ "$REPLY" =~ $default_regex ]]; then
+        return 0
+    else
+        print_warning "Operation cancelled"
+        return 1
+    fi
 }
 
 install_homebrew() {
@@ -142,6 +179,9 @@ cmd_package() {
         clean)
             package_clean "$@"
             ;;
+        link)
+            package_link "$@"
+            ;;
         remove)
             package_remove "$@"
             ;;
@@ -151,11 +191,14 @@ cmd_package() {
             echo "Package management subcommands:"
             echo "  add         Add packages to Brewfile and install them"
             echo "  clean       Remove unused packages and cleanup Homebrew"
+            echo "  link        Switch between package versions"
             echo "  remove      Remove packages from Brewfile and uninstall them"
             echo ""
             echo "Examples:"
             echo "  dot package add git vim       Add packages to Brewfile and install"
             echo "  dot package remove git vim    Remove packages from Brewfile and uninstall"
+            echo "  dot package link node@22      Switch to node version 22"
+            echo "  dot package link list         List available packages and versions"
             echo "  dot package clean             Clean up unused packages"
             ;;
     esac
@@ -180,6 +223,93 @@ package_add() {
         print_success "Packages added to Brewfile and installed"
     else
         print_error "Failed to add packages"
+        return 1
+    fi
+}
+
+package_link() {
+    if ! command_exists brew; then
+        print_error "Homebrew is not installed"
+        return 1
+    fi
+
+    get_versions() {
+        local package_name="$1"
+        brew ls --versions | grep "^${package_name}[ @]" | sed 's/ .*//'
+    }
+
+    list_packages() {
+        print_header "Available packages"
+        local output=""
+        for package in "${LINKABLE_PACKAGES[@]}"; do
+            local line
+            line="$(brew ls --versions | grep "^${package}[ @]" | sed 's/[[:space:]]/\t/g' | sed 's/^/  /')"
+            output+="${line}\n"
+        done
+        echo -e "$output" | column -t -s $'\t'
+    }
+
+    if [[ $# -eq 0 ]] || [[ "$1" == "list" ]]; then
+        list_packages
+        return 0
+    fi
+
+    if [[ $# -ne 1 ]]; then
+        print_error "Invalid arguments"
+        print_info "Usage: dot package link <package>[@<version>] or dot package link list"
+        return 1
+    fi
+
+    local package_name="${1//@*}"
+    local version="$1"
+
+    # Check if package is in allowed list
+    local found=false
+    for pkg in "${LINKABLE_PACKAGES[@]}"; do
+        if [[ "$pkg" == "$package_name" ]]; then
+            found=true
+            break
+        fi
+    done
+
+    if ! $found; then
+        print_error "$package_name is not in the managed packages list"
+        print_info "Available packages: ${LINKABLE_PACKAGES[*]}"
+        return 1
+    fi
+
+    if ! brew list "$version" &>/dev/null; then
+        print_error "${version} is not installed"
+        print_info "Install it first with: brew install $version"
+        return 1
+    fi
+
+    print_header "Switching package version"
+    print_info "Package: $package_name -> $version"
+    echo ""
+
+    print_info "Versions to unlink:"
+    for v in $(get_versions "$package_name"); do
+        echo "  - $v"
+    done
+    print_info "Version to link: $version"
+    echo ""
+
+    if ! ask_confirmation "y"; then
+        return 0
+    fi
+
+    print_info "Executing changes..."
+    for v in $(get_versions "$package_name"); do
+        if brew unlink "$v" 2>/dev/null; then
+            print_info "Unlinked: $v"
+        fi
+    done
+
+    if brew link "$version"; then
+        print_success "Successfully linked: $version"
+    else
+        print_error "Failed to link: $version"
         return 1
     fi
 }
@@ -220,7 +350,7 @@ package_clean() {
     fi
 
     print_header "Cleaning up packages"
-    
+
     print_info "Removing packages not listed in Brewfile..."
     if brew bundle cleanup --file="${INSTALL_DIR}/Brewfile"; then
         print_success "Cleaned up packages not in Brewfile"

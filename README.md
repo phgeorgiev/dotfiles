@@ -51,6 +51,8 @@ dot link                    # Create global symlink for dot script
 dot package add git vim     # Add packages to Brewfile and install them
 dot package remove git vim  # Remove packages from Brewfile and uninstall them
 dot package clean           # Remove packages not in Brewfile and cleanup cache
+dot package link node       # Switch between package versions
+dot package link list       # List available packages and versions
 ```
 
 ### Examples
@@ -65,37 +67,15 @@ dot package remove vim
 # Clean up unused packages
 dot package clean
 
+# Switch to a specific package version
+dot package link node@22
+
+# Switch to latest version of a package
+dot package link node
+
+# List all available package versions
+dot package link list
+
 # Re-stow dotfiles after making changes
 dot stow
-```
-
-## The `bps` command
-
-Switch between multiple package versions with the `bps` command.
-
-example:
-
-```console
-bps
-
-Usage: bps [command]
-
-Brew package version switcher
-
-Available command:
-  list        list available packages and versions
-  <package>   switch package to given version
-              <package>[@<version>]
-              Example:
-              php     switching to latest available php version
-              php@8.3 switching to php 8.3
-
-Available packages:
-  openjdk     23.0.1
-  openjdk@17  17.0.13
-  openjdk@21  21.0.5
-  php         8.4.2
-  php@8.3     8.3.15
-  node        23.5.0
-  node@22     22.12.0
 ```
