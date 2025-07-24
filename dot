@@ -134,6 +134,9 @@ cmd_package() {
     shift || true
 
     case "$subcmd" in
+        add)
+            package_add "$@"
+            ;;
         clean)
             package_clean "$@"
             ;;
@@ -141,12 +144,37 @@ cmd_package() {
             echo "Usage: dot package [SUBCOMMAND]"
             echo ""
             echo "Package management subcommands:"
+            echo "  add         Add packages to Brewfile and install them"
             echo "  clean       Remove unused packages and cleanup Homebrew"
             echo ""
             echo "Examples:"
-            echo "  dot package clean    Clean up unused packages"
+            echo "  dot package add git vim    Add packages to Brewfile and install"
+            echo "  dot package clean          Clean up unused packages"
             ;;
     esac
+}
+
+package_add() {
+    if ! command_exists brew; then
+        print_error "Homebrew is not installed"
+        return 1
+    fi
+
+    if [[ $# -eq 0 ]]; then
+        print_error "No packages specified"
+        print_info "Usage: dot package add <package1> [package2] ..."
+        return 1
+    fi
+
+    print_header "Adding packages to Brewfile"
+    print_info "Adding packages: $*"
+
+    if brew bundle add --file="${INSTALL_DIR}/Brewfile" "$@"; then
+        print_success "Packages added to Brewfile and installed"
+    else
+        print_error "Failed to add packages"
+        return 1
+    fi
 }
 
 package_clean() {
