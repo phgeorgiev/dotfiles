@@ -13,10 +13,15 @@ xcode-select --install
 
 git clone https://github.com/phgeorgiev/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-./install.sh
-# type this in terminal if tmux is already running
-tmux source ~/.tmux.conf
+./dot init
 ```
+
+The `dot init` command will:
+
+- Install Homebrew (if not already installed)
+- Install packages from Brewfile using `brew bundle`
+- Stow dotfiles (create symlinks to your home directory)
+- Create a global symlink for the dot script in `/usr/local/bin`
 
 Press `prefix` + <kbd>I</kbd> (capital i, as in **I**nstall) to fetch the plugin.
 
@@ -27,12 +32,41 @@ git config -f ~/.gitlocal user.email "your email"
 git config -f ~/.gitlocal user.name "Your Name"
 ```
 
-## The `dotsync` command
+## The `dot` command
 
-Syncing dotfiles after the initial installation is done with the `dotsync` command.
+After installation, you can use the `dot` command from anywhere to manage your dotfiles.
+
+### Available commands
 
 ```console
-dotsync
+dot help                    # Show help message
+dot init                    # Initialize dotfiles setup
+dot stow                    # Manage dotfiles with GNU stow
+dot link                    # Create global symlink for dot script
+```
+
+### Package management
+
+```console
+dot package add git vim     # Add packages to Brewfile and install them
+dot package remove git vim  # Remove packages from Brewfile and uninstall them
+dot package clean           # Remove packages not in Brewfile and cleanup cache
+```
+
+### Examples
+
+```console
+# Install a new package and add it to Brewfile
+dot package add neovim
+
+# Remove a package and remove it from Brewfile
+dot package remove vim
+
+# Clean up unused packages
+dot package clean
+
+# Re-stow dotfiles after making changes
+dot stow
 ```
 
 ## The `bps` command
@@ -65,10 +99,3 @@ Available packages:
   node        23.5.0
   node@22     22.12.0
 ```
-
-## Credits
-
-- [dotfiles community](http://dotfiles.github.io/)
-- [Andrej Mihaliak](https://github.com/mihaliak/dotfiles)
-- [Artem Sapegin](https://github.com/sapegin/dotfiles)
-- [Jan Moesen](https://github.com/janmoesen/tilde)
