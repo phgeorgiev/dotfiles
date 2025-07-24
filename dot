@@ -128,6 +128,56 @@ cmd_stow() {
     fi
 }
 
+# Package command
+cmd_package() {
+    local subcmd="${1:-help}"
+    shift || true
+
+    case "$subcmd" in
+        clean)
+            package_clean "$@"
+            ;;
+        help|*)
+            echo "Usage: dot package [SUBCOMMAND]"
+            echo ""
+            echo "Package management subcommands:"
+            echo "  clean       Remove unused packages and cleanup Homebrew"
+            echo ""
+            echo "Examples:"
+            echo "  dot package clean    Clean up unused packages"
+            ;;
+    esac
+}
+
+package_clean() {
+    if ! command_exists brew; then
+        print_error "Homebrew is not installed"
+        return 1
+    fi
+
+    if [[ ! -f "${INSTALL_DIR}/Brewfile" ]]; then
+        print_warning "No Brewfile found at ${INSTALL_DIR}/Brewfile"
+        print_info "Create a Brewfile to manage packages with 'brew bundle dump'"
+        return 1
+    fi
+
+    print_header "Cleaning up packages"
+    
+    print_info "Removing packages not listed in Brewfile..."
+    if brew bundle cleanup --file="${INSTALL_DIR}/Brewfile"; then
+        print_success "Cleaned up packages not in Brewfile"
+    else
+        print_warning "Failed to cleanup packages"
+    fi
+
+    print_info "Cleaning up Homebrew cache..."
+    if brew cleanup; then
+        print_success "Cleaned up Homebrew cache"
+    else
+        print_warning "Failed to clean up cache"
+    fi
+}
+
 # Help command
 cmd_help() {
     echo "Usage: dot [OPTIONS] [COMMAND]"
@@ -137,6 +187,7 @@ cmd_help() {
     echo "Commands:"
     echo "  help        Show this help message"
     echo "  init        Initialize dotfiles setup (install Homebrew, packages, and stow)"
+    echo "  package     Package management commands"
     echo "  stow        Manage dotfiles with GNU stow"
     echo ""
     echo "Options:"
@@ -174,6 +225,9 @@ main() {
             ;;
         init)
             cmd_init "$@"
+            ;;
+        package)
+            cmd_package "$@"
             ;;
         stow)
             cmd_stow "$@"
