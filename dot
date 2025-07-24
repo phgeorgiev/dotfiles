@@ -384,13 +384,14 @@ cmd_link() {
 
     print_header "Creating symlink for dot script"
     print_info "Linking $script_path -> $link_path"
+    print_info "This requires administrator privileges"
 
-    if ln -s "$script_path" "$link_path"; then
+    if sudo ln -s "$script_path" "$link_path"; then
         print_success "Symlink created successfully"
         print_info "You can now run 'dot' from anywhere"
     else
         print_error "Failed to create symlink"
-        print_info "You may need to run with sudo or check permissions"
+        print_info "Check permissions or try running the command manually"
         return 1
     fi
 }
