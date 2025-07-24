@@ -102,6 +102,8 @@ cmd_init() {
 
     install_homebrew || return 1
     install_packages || return 1
+    cmd_stow || return 1
+    cmd_link || return 1
 
     print_success "Dotfiles initialization complete! 🎉"
 }
@@ -234,6 +236,35 @@ package_clean() {
     fi
 }
 
+# Link command
+cmd_link() {
+    local link_path="/usr/local/bin/dot"
+    local script_path="${DOTFILES_DIR}/dot"
+
+    if [[ -L "$link_path" ]]; then
+        print_success "Symlink already exists at $link_path"
+        return 0
+    fi
+
+    if [[ -f "$link_path" ]]; then
+        print_error "File already exists at $link_path (not a symlink)"
+        print_info "Remove the existing file first or choose a different location"
+        return 1
+    fi
+
+    print_header "Creating symlink for dot script"
+    print_info "Linking $script_path -> $link_path"
+
+    if ln -s "$script_path" "$link_path"; then
+        print_success "Symlink created successfully"
+        print_info "You can now run 'dot' from anywhere"
+    else
+        print_error "Failed to create symlink"
+        print_info "You may need to run with sudo or check permissions"
+        return 1
+    fi
+}
+
 # Help command
 cmd_help() {
     echo "Usage: dot [OPTIONS] [COMMAND]"
@@ -242,7 +273,8 @@ cmd_help() {
     echo ""
     echo "Commands:"
     echo "  help        Show this help message"
-    echo "  init        Initialize dotfiles setup (install Homebrew, packages, and stow)"
+    echo "  init        Initialize dotfiles setup (install Homebrew, packages, stow, and create symlink)"
+    echo "  link        Create symlink in /usr/local/bin for global access"
     echo "  package     Package management commands"
     echo "  stow        Manage dotfiles with GNU stow"
     echo ""
@@ -281,6 +313,9 @@ main() {
             ;;
         init)
             cmd_init "$@"
+            ;;
+        link)
+            cmd_link "$@"
             ;;
         package)
             cmd_package "$@"
