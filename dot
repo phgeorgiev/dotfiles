@@ -137,6 +137,24 @@ install_zsh() {
         print_success "Zsh is already the default shell"
     fi
 
+    # Install oh-my-zsh
+    local omz_dir="${HOME}/.oh-my-zsh"
+
+    if [[ -d "$omz_dir" ]]; then
+        print_success "Oh My Zsh is already installed"
+    else
+        print_header "Installing Oh My Zsh"
+        print_info "This will install Oh My Zsh framework..."
+
+        # Install oh-my-zsh non-interactively
+        if RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"; then
+            print_success "Oh My Zsh installed successfully"
+        else
+            print_error "Failed to install Oh My Zsh"
+            return 1
+        fi
+    fi
+
     # Install powerlevel10k theme
     local p10k_dir="${HOME}/.oh-my-zsh/custom/themes/powerlevel10k"
 
@@ -459,7 +477,7 @@ cmd_help() {
     echo ""
     echo "Commands:"
     echo "  help        Show this help message"
-    echo "  init        Initialize dotfiles setup (install Homebrew, packages, Zsh with powerlevel10k, stow, and create symlink)"
+    echo "  init        Initialize dotfiles setup (install Homebrew, packages, Zsh with oh-my-zsh and powerlevel10k, stow, and create symlink)"
     echo "  link        Create symlink in /usr/local/bin for global access"
     echo "  package     Package management commands"
     echo "  stow        Manage dotfiles with GNU stow"
