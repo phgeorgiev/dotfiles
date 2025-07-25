@@ -20,6 +20,7 @@ The `dot init` command will:
 
 - Install Homebrew (if not already installed)
 - Install packages from Brewfile using `brew bundle`
+- Install and configure Zsh with powerlevel10k theme
 - Stow dotfiles (create symlinks to your home directory)
 - Create a global symlink for the dot script in `/usr/local/bin`
 

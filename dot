@@ -104,6 +104,54 @@ install_homebrew() {
     fi
 }
 
+install_zsh() {
+    if command_exists zsh; then
+        print_success "Zsh is already installed"
+    else
+        print_error "Zsh is not installed"
+        print_info "Please install Zsh first: brew install zsh"
+        return 1
+    fi
+
+    # Set zsh as default shell if not already
+    local current_shell
+    current_shell="$(dscl . -read /Users/"$USER" UserShell | cut -d: -f2 | xargs)"
+    local zsh_path
+    zsh_path="$(which zsh)"
+
+    if [[ "$current_shell" != "$zsh_path" ]]; then
+        print_info "Setting Zsh as default shell..."
+        if sudo chsh -s "$zsh_path" "$USER"; then
+            print_success "Zsh set as default shell"
+            print_info "Restart your terminal to use Zsh"
+        else
+            print_warning "Failed to set Zsh as default shell"
+            print_info "You can change it manually with: chsh -s $(which zsh)"
+        fi
+    else
+        print_success "Zsh is already the default shell"
+    fi
+
+    # Install powerlevel10k theme
+    local p10k_dir="${HOME}/.oh-my-zsh/custom/themes/powerlevel10k"
+
+    if [[ -d "$p10k_dir" ]]; then
+        print_success "Powerlevel10k is already installed"
+    else
+        print_header "Installing Powerlevel10k theme"
+        print_info "This will install the Powerlevel10k Zsh theme..."
+
+        # Clone powerlevel10k
+        if git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$p10k_dir"; then
+            print_success "Powerlevel10k installed successfully"
+            print_info "To configure powerlevel10k, run: p10k configure"
+        else
+            print_error "Failed to install Powerlevel10k"
+            return 1
+        fi
+    fi
+}
+
 install_packages() {
     if ! command_exists brew; then
         print_error "Homebrew is not installed"
@@ -139,9 +187,11 @@ cmd_init() {
 
     install_homebrew || return 1
     install_packages || return 1
+    install_zsh || return 1
     cmd_stow || return 1
     cmd_link || return 1
 
+    echo ""
     print_success "Dotfiles initialization complete! 🎉"
 }
 
@@ -404,7 +454,7 @@ cmd_help() {
     echo ""
     echo "Commands:"
     echo "  help        Show this help message"
-    echo "  init        Initialize dotfiles setup (install Homebrew, packages, stow, and create symlink)"
+    echo "  init        Initialize dotfiles setup (install Homebrew, packages, Zsh with powerlevel10k, stow, and create symlink)"
     echo "  link        Create symlink in /usr/local/bin for global access"
     echo "  package     Package management commands"
     echo "  stow        Manage dotfiles with GNU stow"

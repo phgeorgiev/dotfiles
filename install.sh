@@ -47,19 +47,6 @@ done
 # Ask for the administrator password upfront
 echo 'Asking for administrator password upfront' && sudo -v
 
-# Link files
-sh "./bin/dotsync"
-
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
-	title "Install Oh My Zsh"
-	sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-fi
-
-if [ ! -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
-	title "Install powerlevel10k theme"
-	git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$HOME/.oh-my-zsh/custom/themes/powerlevel10k"
-fi
-
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
 	title "Install TPM"
 	git clone --depth=1 https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
