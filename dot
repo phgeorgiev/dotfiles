@@ -13,7 +13,12 @@ readonly BOLD='\033[1m'
 
 # Script metadata
 readonly SCRIPT_NAME="dot"
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Resolve symlinks to get the actual script location
+SCRIPT_PATH="${BASH_SOURCE[0]}"
+while [[ -L "$SCRIPT_PATH" ]]; do
+    SCRIPT_PATH="$(readlink "$SCRIPT_PATH")"
+done
+DOTFILES_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
 readonly DOTFILES_DIR
 readonly INSTALL_DIR="${DOTFILES_DIR}/install"
 
