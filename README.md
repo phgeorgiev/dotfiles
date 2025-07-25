@@ -24,8 +24,6 @@ The `dot init` command will:
 - Stow dotfiles (create symlinks to your home directory)
 - Create a global symlink for the dot script in `/usr/local/bin`
 
-Press `prefix` + <kbd>I</kbd> (capital i, as in **I**nstall) to fetch the plugin.
-
 ### Local Git identity
 
 ```bash

@@ -47,11 +47,6 @@ done
 # Ask for the administrator password upfront
 echo 'Asking for administrator password upfront' && sudo -v
 
-if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
-	title "Install TPM"
-	git clone --depth=1 https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-fi
-
 if test ! "$(which composer)"; then
 	title "Install Composer"
 

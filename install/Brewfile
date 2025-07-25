@@ -6,7 +6,6 @@
 brew "stow"
 brew "zsh"
 brew "zsh-syntax-highlighting"
-brew "tmux"
 brew "jq"
 brew "yq"
 brew "tree"
