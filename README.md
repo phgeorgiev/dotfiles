@@ -23,6 +23,7 @@ The `dot init` command will:
 - Install and configure Zsh with oh-my-zsh and powerlevel10k theme
 - Stow dotfiles (create symlinks to your home directory)
 - Create a global symlink for the dot script in `/usr/local/bin`
+- Set up tab completion for the dot command
 
 ### Local Git identity
 
@@ -33,7 +34,7 @@ git config -f ~/.gitlocal user.name "Your Name"
 
 ## The `dot` command
 
-After installation, you can use the `dot` command from anywhere to manage your dotfiles.
+After installation, you can use the `dot` command from anywhere to manage your dotfiles. The command includes tab completion for all commands and subcommands.
 
 ### Available commands
 

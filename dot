@@ -173,6 +173,7 @@ install_zsh() {
             return 1
         fi
     fi
+
 }
 
 install_packages() {

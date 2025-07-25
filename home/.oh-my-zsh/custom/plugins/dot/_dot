@@ -1,0 +1,66 @@
+#compdef dot
+
+_dot() {
+    local line state
+
+    _arguments -C \
+        '1: :->command' \
+        '*::arg:->args'
+
+    case $state in
+        command)
+            _values 'dot commands' \
+                'help[Show help message]' \
+                'init[Initialize dotfiles setup]' \
+                'link[Create symlink in /usr/local/bin for global access]' \
+                'package[Package management commands]' \
+                'stow[Manage dotfiles with GNU stow]'
+            ;;
+        args)
+            case $line[1] in
+                package)
+                    _dot_package
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+_dot_package() {
+    local line state
+
+    _arguments -C \
+        '1: :->subcommand' \
+        '*::arg:->args'
+
+    case $state in
+        subcommand)
+            _values 'dot package subcommands' \
+                'add[Add packages to Brewfile and install them]' \
+                'clean[Remove unused packages and cleanup Homebrew]' \
+                'link[Switch between package versions]' \
+                'remove[Remove packages from Brewfile and uninstall them]' \
+                'help[Show package help]'
+            ;;
+        args)
+            case $line[1] in
+                add|remove)
+                    # Complete with available brew packages
+                    if command -v brew >/dev/null 2>&1; then
+                        _values 'packages' $(brew search 2>/dev/null | head -50)
+                    fi
+                    ;;
+                link)
+                    # Complete with linkable packages and versions
+                    _values 'linkable packages' \
+                        'list[List available packages and versions]' \
+                        'openjdk' \
+                        'php' \
+                        'node'
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+_dot "$@"
