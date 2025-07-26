@@ -14,7 +14,8 @@ _dot() {
                 'init[Initialize dotfiles setup]' \
                 'link[Create symlink in /usr/local/bin for global access]' \
                 'package[Package management commands]' \
-                'stow[Manage dotfiles with GNU stow]'
+                'stow[Manage dotfiles with GNU stow]' \
+                'update[Update dotfiles and optionally upgrade packages]'
             ;;
         args)
             case $line[1] in

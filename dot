@@ -51,15 +51,13 @@ command_exists() {
 }
 
 ask_confirmation() {
-    local default="${1:-N}"
-    local message="Do you want to proceed with these changes?"
+    local message="${1:-Do you want to proceed with these changes?}"
+    local default="${2:-N}"
 
     if [[ "$default" =~ ^[Yy]$ ]]; then
         local prompt="(Y/n)"
-        local default_regex="^[Nn]$"
     else
         local prompt="(y/N)"
-        local default_regex="^[Yy]$"
     fi
 
     read -p "$message $prompt: " -n 1 -r
@@ -76,10 +74,13 @@ ask_confirmation() {
     fi
 
     # Check user input
-    if [[ "$REPLY" =~ $default_regex ]]; then
+    if [[ "$REPLY" =~ ^[Yy]$ ]]; then
         return 0
-    else
+    elif [[ "$REPLY" =~ ^[Nn]$ ]]; then
         print_warning "Operation cancelled"
+        return 1
+    else
+        print_warning "Invalid input. Operation cancelled"
         return 1
     fi
 }
@@ -289,6 +290,31 @@ cmd_init() {
     print_success "Dotfiles initialization complete! 🎉"
 }
 
+# Update command
+cmd_update() {
+    print_header "Updating dotfiles"
+
+    print_info "Pulling changes..."
+    if git -C "${DOTFILES_DIR}" pull; then
+        print_success "Dotfiles updated successfully"
+    else
+        print_error "Failed to fetch from remote"
+        return 1
+    fi
+
+    # Update packages
+    if ask_confirmation "Do you want to update Homebrew packages?" "y"; then
+        brew update
+        brew upgrade
+        print_success "Homebrew packages updated successfully"
+    fi
+
+    # Re-stow dotfiles
+    if ask_confirmation "Re-stow dotfiles?" "y"; then
+        cmd_stow
+    fi
+}
+
 # Stow command
 cmd_stow() {
     print_header "Stowing dotfiles"
@@ -439,7 +465,7 @@ package_link() {
     print_info "Version to link: $version"
     echo ""
 
-    if ! ask_confirmation "y"; then
+    if ! ask_confirmation "Do you want to proceed with these changes?" "y"; then
         return 0
     fi
 
@@ -549,6 +575,7 @@ cmd_help() {
     echo "Commands:"
     echo "  help        Show this help message"
     echo "  init        Initialize and configure dotfiles"
+    echo "  update      Update dotfiles and packages"
     echo "  link        Create symlink in /usr/local/bin for global access"
     echo "  package     Package management commands"
     echo "  stow        Manage dotfiles with GNU stow"
@@ -588,6 +615,9 @@ main() {
             ;;
         init)
             cmd_init "$@"
+            ;;
+        update)
+            cmd_update "$@"
             ;;
         link)
             cmd_link "$@"

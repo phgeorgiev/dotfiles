@@ -42,6 +42,7 @@ After installation, you can use the `dot` command from anywhere to manage your d
 ```console
 dot help                    # Show help message
 dot init                    # Initialize dotfiles setup
+dot update                  # Update dotfiles and optionally upgrade packages
 dot stow                    # Manage dotfiles with GNU stow
 dot link                    # Create global symlink for dot script
 ```
@@ -79,4 +80,7 @@ dot package link list
 
 # Re-stow dotfiles after making changes
 dot stow
+
+# Update dotfiles and optionally upgrade packages
+dot update
 ```
