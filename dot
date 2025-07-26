@@ -358,11 +358,15 @@ cmd_package() {
         update)
             package_update "$@"
             ;;
+        check)
+            package_check "$@"
+            ;;
         help|*)
             echo "Usage: dot package [SUBCOMMAND]"
             echo ""
             echo "Package management subcommands:"
             echo "  add         Add packages to Brewfile and install them"
+            echo "  check       Check installed vs missing packages from Brewfile"
             echo "  clean       Remove unused packages and cleanup Homebrew"
             echo "  link        Switch between package versions"
             echo "  remove      Remove packages from Brewfile and uninstall them"
@@ -375,6 +379,7 @@ cmd_package() {
             echo "  dot package update git vim    Update specific packages"
             echo "  dot package link node@22      Switch to node version 22"
             echo "  dot package link list         List available packages and versions"
+            echo "  dot package check             Check installed vs missing packages"
             echo "  dot package clean             Clean up unused packages"
             ;;
     esac
@@ -664,6 +669,94 @@ package_update() {
         else
             print_warning "Failed to clean up old versions"
         fi
+    fi
+}
+
+package_check() {
+    if ! command_exists brew; then
+        print_error "Homebrew is not installed"
+        return 1
+    fi
+
+    print_header "Checking installed packages"
+
+    local missing_brew=()
+    local missing_cask=()
+    local installed_brew=()
+    local installed_cask=()
+
+    # Get lists of installed packages
+    local installed_formulas
+    local installed_casks
+    installed_formulas=$(brew list --formula 2>/dev/null || true)
+    installed_casks=$(brew list --cask 2>/dev/null || true)
+
+    # Read Brewfile and extract package names
+    local brewfile_formulas
+    local brewfile_casks
+    brewfile_formulas=$(grep '^brew ' "${INSTALL_DIR}/Brewfile" | sed 's/^brew "\([^"]*\)".*/\1/' | sed 's|.*/||')
+    brewfile_casks=$(grep '^cask ' "${INSTALL_DIR}/Brewfile" | sed 's/^cask "\([^"]*\)".*/\1/')
+
+    # Check each formula from Brewfile
+    while IFS= read -r formula; do
+        [[ -z "$formula" ]] && continue
+        if echo "$installed_formulas" | grep -q "^${formula}$"; then
+            installed_brew+=("$formula")
+        else
+            missing_brew+=("$formula")
+        fi
+    done <<< "$brewfile_formulas"
+
+    # Check each cask from Brewfile
+    while IFS= read -r cask; do
+        [[ -z "$cask" ]] && continue
+        if echo "$installed_casks" | grep -q "^${cask}$"; then
+            installed_cask+=("$cask")
+        else
+            missing_cask+=("$cask")
+        fi
+    done <<< "$brewfile_casks"
+
+    # Display results
+    print_success "Installed formulas (${#installed_brew[@]}):"
+    for formula in "${installed_brew[@]}"; do
+        echo "  ✓ $formula"
+    done
+
+    if [[ ${#missing_brew[@]} -gt 0 ]]; then
+        echo ""
+        print_warning "Missing formulas (${#missing_brew[@]}):"
+        for formula in "${missing_brew[@]}"; do
+            echo "  ✗ $formula"
+        done
+    fi
+
+    echo ""
+    print_success "Installed casks (${#installed_cask[@]}):"
+    for cask in "${installed_cask[@]}"; do
+        echo "  ✓ $cask"
+    done
+
+    if [[ ${#missing_cask[@]} -gt 0 ]]; then
+        echo ""
+        print_warning "Missing casks (${#missing_cask[@]}):"
+        for cask in "${missing_cask[@]}"; do
+            echo "  ✗ $cask"
+        done
+    fi
+
+    # Summary
+    local total_expected=$((${#installed_brew[@]} + ${#missing_brew[@]} + ${#installed_cask[@]} + ${#missing_cask[@]}))
+    local total_installed=$((${#installed_brew[@]} + ${#installed_cask[@]}))
+    local total_missing=$((${#missing_brew[@]} + ${#missing_cask[@]}))
+
+    echo ""
+    if [[ $total_missing -eq 0 ]]; then
+        print_success "All packages from Brewfile are installed! ($total_installed/$total_expected)"
+    else
+        print_info "Summary: $total_installed/$total_expected packages installed, $total_missing missing"
+        echo ""
+        print_info "To install missing packages, run: dot package update all"
     fi
 }
 

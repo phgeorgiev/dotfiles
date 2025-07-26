@@ -38,6 +38,7 @@ _dot_package() {
         subcommand)
             _values 'dot package subcommands' \
                 'add[Add packages to Brewfile and install them]' \
+                'check[Check installed vs missing packages from Brewfile]' \
                 'clean[Remove unused packages and cleanup Homebrew]' \
                 'link[Switch between package versions]' \
                 'remove[Remove packages from Brewfile and uninstall them]' \
