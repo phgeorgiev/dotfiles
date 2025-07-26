@@ -174,7 +174,6 @@ install_zsh() {
             return 1
         fi
     fi
-
 }
 
 install_composer() {
@@ -407,23 +406,34 @@ package_add() {
             if ! brew bundle add --file="${INSTALL_DIR}/Brewfile" --cask "$package"; then
                 print_error "Failed to add cask: $package"
                 failed=1
+            else
+                if ! brew install --cask "$package"; then
+                    print_error "Failed to install cask: $package"
+                    failed=1
+                fi
             fi
         else
             if ! brew bundle add --file="${INSTALL_DIR}/Brewfile" "$package"; then
                 print_error "Failed to add formula: $package"
                 failed=1
+            else
+                if ! brew install "$package"; then
+                    print_error "Failed to install formula: $package"
+                    failed=1
+                fi
             fi
         fi
     done
+
     if [[ $failed -eq 0 ]]; then
         print_success "Packages added to Brewfile and installed"
-        if ask_confirmation "Do you want to reorganize the Brewfile?" "y"; then
-            reorganize_brewfile
-            print_success "Brewfile reorganized"
-        fi
     else
         print_error "Some packages failed to add"
-        return 1
+    fi
+
+    if ask_confirmation "Do you want to reorganize the Brewfile?" "y"; then
+        reorganize_brewfile
+        print_success "Brewfile reorganized"
     fi
 }
 
@@ -556,12 +566,18 @@ package_remove() {
     print_header "Removing packages from Brewfile"
     print_info "Removing packages: $*"
 
-    if brew bundle remove --file="${INSTALL_DIR}/Brewfile" "$@"; then
-        print_success "Packages removed from Brewfile and uninstalled"
-    else
-        print_error "Failed to remove packages"
-        return 1
-    fi
+    for package in "$@"; do
+        if brew bundle remove --file="${INSTALL_DIR}/Brewfile" "$package"; then
+            print_success "Packages removed from Brewfile"
+            if ! brew uninstall "$package"; then
+                print_warning "Failed to uninstall package: $package"
+            else
+                print_success "Package uninstalled: $package"
+            fi
+        else
+            print_error "Failed to remove package: $package"
+        fi
+    done
 }
 
 package_clean() {
