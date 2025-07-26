@@ -394,13 +394,56 @@ package_add() {
 
     print_header "Adding packages to Brewfile"
     print_info "Adding packages: $*"
-
-    if brew bundle add --file="${INSTALL_DIR}/Brewfile" "$@"; then
+    local failed=0
+    for package in "$@"; do
+        local package_type
+        package_type=$(brew info --json=v2 "$package" 2>/dev/null | jq -r '.casks // empty | if length > 0 then "cask" else empty end')
+        if [[ "$package_type" == "cask" ]]; then
+            if ! brew bundle add --file="${INSTALL_DIR}/Brewfile" --cask "$package"; then
+                print_error "Failed to add cask: $package"
+                failed=1
+            fi
+        else
+            if ! brew bundle add --file="${INSTALL_DIR}/Brewfile" "$package"; then
+                print_error "Failed to add formula: $package"
+                failed=1
+            fi
+        fi
+    done
+    if [[ $failed -eq 0 ]]; then
         print_success "Packages added to Brewfile and installed"
+        if ask_confirmation "Do you want to reorganize the Brewfile?" "y"; then
+            reorganize_brewfile
+            print_success "Brewfile reorganized"
+        fi
     else
-        print_error "Failed to add packages"
+        print_error "Some packages failed to add"
         return 1
     fi
+}
+
+reorganize_brewfile() {
+    local brewfile="${INSTALL_DIR}/Brewfile"
+    local temp_file="${brewfile}.tmp"
+    # Extract header comments, brew entries, and cask entries
+    {
+        # Keep header comments and empty lines before first brew/cask entry
+        awk '/^(brew|cask)/ {exit} {print}' "$brewfile"
+        # Add Regular packages comment if not present
+        if ! grep -q "# Regular packages" "$brewfile"; then
+            echo "# Regular packages"
+        fi
+        # Extract and sort brew entries
+        grep '^brew ' "$brewfile" | sort
+        echo ""
+        # Add Cask packages comment if not present  
+        if ! grep -q "# Cask packages" "$brewfile"; then
+            echo "# Cask packages"
+        fi
+        # Extract and sort cask entries
+        grep '^cask ' "$brewfile" | sort
+    } > "$temp_file"
+    mv "$temp_file" "$brewfile"
 }
 
 package_link() {
