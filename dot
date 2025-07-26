@@ -176,6 +176,74 @@ install_zsh() {
 
 }
 
+install_composer() {
+    if command_exists composer; then
+        print_success "Composer is already installed"
+        return 0
+    fi
+
+    if ! command_exists php; then
+        print_error "PHP is not installed"
+        print_info "Install PHP first: brew install php"
+        return 1
+    fi
+
+    print_header "Installing Composer"
+    print_info "This will install Composer PHP dependency manager..."
+
+    # Download and install composer
+    local expected_checksum
+    local actual_checksum
+
+    expected_checksum="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')" || {
+        print_error "Failed to get installer checksum"
+        return 1
+    }
+
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" || {
+        print_error "Failed to download composer installer"
+        return 1
+    }
+
+    actual_checksum="$(php -r "echo hash_file('sha384', 'composer-setup.php');")" || {
+        print_error "Failed to calculate installer checksum"
+        rm -f composer-setup.php
+        return 1
+    }
+
+    if [[ "$expected_checksum" != "$actual_checksum" ]]; then
+        print_error "Invalid installer checksum"
+        rm composer-setup.php
+        return 1
+    fi
+
+    if php composer-setup.php --quiet && rm composer-setup.php; then
+        # Move to /usr/local/bin for global access
+        if sudo mv composer.phar /usr/local/bin/composer; then
+            print_success "Composer installed successfully"
+            print_info "Composer is now available globally as 'composer'"
+
+            # Run composer setup script if it exists
+            local composer_setup="${INSTALL_DIR}/composer.sh"
+            if [[ -f "$composer_setup" ]]; then
+                print_info "Running composer setup script..."
+                if bash "$composer_setup"; then
+                    print_success "Composer setup completed"
+                else
+                    print_warning "Composer setup script failed"
+                fi
+            fi
+        else
+            print_warning "Composer installed but failed to move to global location"
+            print_info "You can move it manually: sudo mv composer.phar /usr/local/bin/composer"
+        fi
+    else
+        print_error "Failed to install Composer"
+        rm -f composer-setup.php composer.phar
+        return 1
+    fi
+}
+
 install_packages() {
     if ! command_exists brew; then
         print_error "Homebrew is not installed"
@@ -215,7 +283,9 @@ cmd_init() {
     cmd_stow || return 1
     cmd_link || return 1
 
-    echo ""
+    install_composer || print_warning "Composer installation failed, continuing..."
+
+    echo
     print_success "Dotfiles initialization complete! 🎉"
 }
 
@@ -478,7 +548,7 @@ cmd_help() {
     echo ""
     echo "Commands:"
     echo "  help        Show this help message"
-    echo "  init        Initialize dotfiles setup (install Homebrew, packages, Zsh with oh-my-zsh and powerlevel10k, stow, and create symlink)"
+    echo "  init        Initialize and configure dotfiles"
     echo "  link        Create symlink in /usr/local/bin for global access"
     echo "  package     Package management commands"
     echo "  stow        Manage dotfiles with GNU stow"

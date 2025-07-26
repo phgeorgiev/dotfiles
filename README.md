@@ -20,6 +20,7 @@ The `dot init` command will:
 
 - Install Homebrew (if not already installed)
 - Install packages from Brewfile using `brew bundle`
+- Install Composer PHP dependency manager
 - Install and configure Zsh with oh-my-zsh and powerlevel10k theme
 - Stow dotfiles (create symlinks to your home directory)
 - Create a global symlink for the dot script in `/usr/local/bin`
