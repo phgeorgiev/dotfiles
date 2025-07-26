@@ -436,7 +436,7 @@ reorganize_brewfile() {
         # Extract and sort brew entries
         grep '^brew ' "$brewfile" | sort
         echo ""
-        # Add Cask packages comment if not present  
+        # Add Cask packages comment if not present
         if ! grep -q "# Cask packages" "$brewfile"; then
             echo "# Cask packages"
         fi
