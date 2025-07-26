@@ -433,20 +433,23 @@ reorganize_brewfile() {
     # Extract header comments, brew entries, and cask entries
     {
         # Keep header comments and empty lines before first brew/cask entry
-        awk '/^(brew|cask)/ {exit} {print}' "$brewfile"
-        # Add Regular packages comment if not present
-        if ! grep -q "# Regular packages" "$brewfile"; then
+        local header
+        header=$(awk '/^(brew|cask)/ {exit} {print}' "$brewfile")
+        echo "$header"
+
+        # Add Regular packages comment if not present in header
+        if ! echo "$header" | grep -q "# Regular packages"; then
             echo "# Regular packages"
         fi
-        # Extract and sort brew entries
-        grep '^brew ' "$brewfile" | sort
+        # Extract, sort and deduplicate brew entries
+        grep '^brew ' "$brewfile" | sort -u
         echo ""
-        # Add Cask packages comment if not present
-        if ! grep -q "# Cask packages" "$brewfile"; then
+        # Add Cask packages comment if not present in header
+        if ! echo "$header" | grep -q "# Cask packages"; then
             echo "# Cask packages"
         fi
-        # Extract and sort cask entries
-        grep '^cask ' "$brewfile" | sort
+        # Extract, sort and deduplicate cask entries
+        grep '^cask ' "$brewfile" | sort -u
     } > "$temp_file"
     mv "$temp_file" "$brewfile"
 }
