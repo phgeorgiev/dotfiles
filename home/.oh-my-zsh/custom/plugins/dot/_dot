@@ -41,6 +41,7 @@ _dot_package() {
                 'clean[Remove unused packages and cleanup Homebrew]' \
                 'link[Switch between package versions]' \
                 'remove[Remove packages from Brewfile and uninstall them]' \
+                'update[Update packages in Brewfile to latest versions]' \
                 'help[Show package help]'
             ;;
         args)
@@ -49,6 +50,16 @@ _dot_package() {
                     # Complete with available brew packages
                     if command -v brew >/dev/null 2>&1; then
                         _values 'packages' $(brew search 2>/dev/null | head -50)
+                    fi
+                    ;;
+                update)
+                    # Complete with 'all' or available brew packages
+                    if command -v brew >/dev/null 2>&1; then
+                        _values 'packages' \
+                            'all[Update all packages from Brewfile]' \
+                            $(brew search 2>/dev/null | head -50)
+                    else
+                        _values 'packages' 'all[Update all packages from Brewfile]'
                     fi
                     ;;
                 link)

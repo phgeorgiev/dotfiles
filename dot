@@ -355,6 +355,9 @@ cmd_package() {
         remove)
             package_remove "$@"
             ;;
+        update)
+            package_update "$@"
+            ;;
         help|*)
             echo "Usage: dot package [SUBCOMMAND]"
             echo ""
@@ -363,10 +366,13 @@ cmd_package() {
             echo "  clean       Remove unused packages and cleanup Homebrew"
             echo "  link        Switch between package versions"
             echo "  remove      Remove packages from Brewfile and uninstall them"
+            echo "  update      Update packages (all|package names)"
             echo ""
             echo "Examples:"
             echo "  dot package add git vim       Add packages to Brewfile and install"
             echo "  dot package remove git vim    Remove packages from Brewfile and uninstall"
+            echo "  dot package update all        Update all packages in Brewfile"
+            echo "  dot package update git vim    Update specific packages"
             echo "  dot package link node@22      Switch to node version 22"
             echo "  dot package link list         List available packages and versions"
             echo "  dot package clean             Clean up unused packages"
@@ -533,6 +539,88 @@ package_clean() {
         print_success "Cleaned up Homebrew cache"
     else
         print_warning "Failed to clean up cache"
+    fi
+}
+
+package_update() {
+    if ! command_exists brew; then
+        print_error "Homebrew is not installed"
+        return 1
+    fi
+
+    if [[ $# -eq 0 ]]; then
+        print_error "Missing argument"
+        print_info "Usage: dot package update all|<package1> [package2] ..."
+        print_info "Examples:"
+        print_info "  dot package update all          Update all packages from Brewfile"
+        print_info "  dot package update git vim      Update specific packages"
+        return 1
+    fi
+
+    # Update Homebrew first
+    print_info "Updating Homebrew..."
+    if brew update; then
+        print_success "Homebrew updated successfully"
+    else
+        print_error "Failed to update Homebrew"
+        return 1
+    fi
+
+    if [[ "$1" == "all" ]]; then
+        # Update all packages from Brewfile
+        if [[ ! -f "${INSTALL_DIR}/Brewfile" ]]; then
+            print_warning "No Brewfile found at ${INSTALL_DIR}/Brewfile"
+            print_info "Create a Brewfile to manage packages with 'brew bundle dump'"
+            return 1
+        fi
+
+        print_header "Updating all packages from Brewfile"
+        print_info "Using Brewfile at ${INSTALL_DIR}/Brewfile"
+
+        # Upgrade packages listed in Brewfile
+        print_info "Upgrading packages from Brewfile..."
+        if brew bundle --file="${INSTALL_DIR}/Brewfile"; then
+            print_success "All packages updated from Brewfile"
+        else
+            print_error "Failed to update packages from Brewfile"
+            return 1
+        fi
+    else
+        # Update specific packages
+        print_header "Updating specific packages"
+        print_info "Updating packages: $*"
+
+        local failed_packages=()
+        for package in "$@"; do
+            print_info "Updating $package..."
+            if brew upgrade "$package" 2>/dev/null; then
+                print_success "Updated $package"
+            else
+                # Try installing if not installed
+                if brew install "$package"; then
+                    print_success "Installed $package"
+                else
+                    print_error "Failed to update/install $package"
+                    failed_packages+=("$package")
+                fi
+            fi
+        done
+
+        if [[ ${#failed_packages[@]} -gt 0 ]]; then
+            print_warning "Failed to update packages: ${failed_packages[*]}"
+            return 1
+        else
+            print_success "All specified packages updated successfully"
+        fi
+    fi
+
+    # Optional cleanup
+    if ask_confirmation "Do you want to clean up old package versions?" "y"; then
+        if brew cleanup; then
+            print_success "Cleaned up old package versions"
+        else
+            print_warning "Failed to clean up old versions"
+        fi
     fi
 }
 
