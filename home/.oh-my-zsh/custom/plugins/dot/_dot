@@ -1,3 +1,4 @@
+#!/usr/bin/env zsh
 #compdef dot
 
 _dot() {
@@ -18,7 +19,7 @@ _dot() {
                 'update[Update dotfiles and optionally upgrade packages]'
             ;;
         args)
-            case $line[1] in
+            case ${line[1]} in
                 package)
                     _dot_package
                     ;;
@@ -45,19 +46,33 @@ _dot_package() {
                 'help[Show package help]'
             ;;
         args)
-            case $line[1] in
-                add|remove)
+            case ${line[1]} in
+                add)
                     # Complete with available brew packages
                     if command -v brew >/dev/null 2>&1; then
-                        _values 'packages' $(brew search 2>/dev/null | head -50)
+                        if [[ -n ${words[CURRENT]} ]]; then
+                            compadd $(brew search ${words[CURRENT]} 2>/dev/null | head -20)
+                        fi
+                    fi
+                    ;;
+                remove)
+                    # Complete with installed packages
+                    if command -v brew >/dev/null 2>&1; then
+                        local installed=($(brew list --formula 2>/dev/null; brew list --cask 2>/dev/null))
+                        if [[ ${#installed[@]} -gt 0 ]]; then
+                            _values 'packages' "${installed[@]}"
+                        fi
                     fi
                     ;;
                 update)
-                    # Complete with 'all' or available brew packages
+                    # Complete with 'all' or installed packages
                     if command -v brew >/dev/null 2>&1; then
-                        _values 'packages' \
-                            'all[Update all packages from Brewfile]' \
-                            $(brew search 2>/dev/null | head -50)
+                        local installed=($(brew list --formula 2>/dev/null; brew list --cask 2>/dev/null))
+                        if [[ ${#installed[@]} -gt 0 ]]; then
+                            _values 'packages' 'all[Update all packages from Brewfile]' "${installed[@]}"
+                        else
+                            _values 'packages' 'all[Update all packages from Brewfile]'
+                        fi
                     else
                         _values 'packages' 'all[Update all packages from Brewfile]'
                     fi
