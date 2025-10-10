@@ -244,24 +244,6 @@ install_composer() {
     fi
 }
 
-install_claude() {
-    if command_exists claude; then
-        print_success "Claude Code is already installed"
-        return 0
-    fi
-
-    print_header "Installing Claude Code"
-    print_info "This will install Claude Code CLI using npm..."
-
-    if npm install -g @anthropic-ai/claude-code; then
-        print_success "Claude Code installed successfully"
-        print_info "Claude Code is now available globally as 'claude'"
-    else
-        print_error "Failed to install Claude Code"
-        return 1
-    fi
-}
-
 install_packages() {
     if ! command_exists brew; then
         print_error "Homebrew is not installed"
@@ -302,7 +284,6 @@ cmd_init() {
     cmd_link || return 1
 
     install_composer || print_warning "Composer installation failed, continuing..."
-    install_claude || print_warning "Claude Code installation failed, continuing..."
 
     echo
     print_success "Dotfiles initialization complete! 🎉"
