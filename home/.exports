@@ -2,6 +2,7 @@
 
 export EDITOR=vim
 export XDG_CONFIG_HOME="$HOME/.config"
+export PATH=/opt/homebrew/opt/openjdk/bin:$PATH
 export PATH=$PATH:/opt/subversion/bin
 export PATH=$PATH:/usr/local/bin
 export PATH=$PATH:$HOME/.composer/vendor/bin
