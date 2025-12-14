@@ -703,11 +703,14 @@ package_check() {
     local missing_cask=()
     local installed_brew=()
     local installed_cask=()
+    local untracked_brew=()
+    local untracked_cask=()
 
     # Get lists of installed packages
+    # Use 'brew leaves' to get only directly installed formulas (not dependencies)
     local installed_formulas
     local installed_casks
-    installed_formulas=$(brew list --formula 2>/dev/null || true)
+    installed_formulas=$(brew leaves 2>/dev/null || true)
     installed_casks=$(brew list --cask 2>/dev/null || true)
 
     # Read Brewfile and extract package names
@@ -735,6 +738,22 @@ package_check() {
             missing_cask+=("$cask")
         fi
     done <<< "$brewfile_casks"
+
+    # Check for installed packages not in Brewfile
+    while IFS= read -r formula; do
+        [[ -z "$formula" ]] && continue
+        if ! echo "$brewfile_formulas" | grep -q "^${formula}$"; then
+            untracked_brew+=("$formula")
+        fi
+    done <<< "$installed_formulas"
+
+    # Check for installed casks not in Brewfile
+    while IFS= read -r cask; do
+        [[ -z "$cask" ]] && continue
+        if ! echo "$brewfile_casks" | grep -q "^${cask}$"; then
+            untracked_cask+=("$cask")
+        fi
+    done <<< "$installed_casks"
 
     # Display results
     print_success "Installed formulas (${#installed_brew[@]}):"
@@ -764,18 +783,42 @@ package_check() {
         done
     fi
 
+    # Display untracked packages
+    if [[ ${#untracked_brew[@]} -gt 0 ]]; then
+        echo ""
+        print_info "Untracked formulas (${#untracked_brew[@]}) - installed but not in Brewfile:"
+        for formula in "${untracked_brew[@]}"; do
+            echo "  • $formula"
+        done
+    fi
+
+    if [[ ${#untracked_cask[@]} -gt 0 ]]; then
+        echo ""
+        print_info "Untracked casks (${#untracked_cask[@]}) - installed but not in Brewfile:"
+        for cask in "${untracked_cask[@]}"; do
+            echo "  • $cask"
+        done
+    fi
+
     # Summary
     local total_expected=$((${#installed_brew[@]} + ${#missing_brew[@]} + ${#installed_cask[@]} + ${#missing_cask[@]}))
     local total_installed=$((${#installed_brew[@]} + ${#installed_cask[@]}))
     local total_missing=$((${#missing_brew[@]} + ${#missing_cask[@]}))
+    local total_untracked=$((${#untracked_brew[@]} + ${#untracked_cask[@]}))
 
     echo ""
-    if [[ $total_missing -eq 0 ]]; then
-        print_success "All packages from Brewfile are installed! ($total_installed/$total_expected)"
+    if [[ $total_missing -eq 0 ]] && [[ $total_untracked -eq 0 ]]; then
+        print_success "All packages from Brewfile are installed and no untracked packages found! ($total_installed/$total_expected)"
     else
-        print_info "Summary: $total_installed/$total_expected packages installed, $total_missing missing"
-        echo ""
-        print_info "To install missing packages, run: dot package update all"
+        print_info "Summary: $total_installed/$total_expected packages installed"
+        if [[ $total_missing -gt 0 ]]; then
+            print_info "  - $total_missing missing from system"
+            echo ""
+            print_info "To install missing packages, run: dot package update all"
+        fi
+        if [[ $total_untracked -gt 0 ]]; then
+            print_info "  - $total_untracked installed but not in Brewfile"
+        fi
     fi
 }
 
