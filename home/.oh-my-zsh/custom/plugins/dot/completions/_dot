@@ -41,6 +41,7 @@ _dot_package() {
                 'check[Check installed vs missing packages from Brewfile]' \
                 'clean[Remove unused packages and cleanup Homebrew]' \
                 'link[Switch between package versions]' \
+                'outdated[Check for outdated packages from Brewfile]' \
                 'remove[Remove packages from Brewfile and uninstall them]' \
                 'update[Update packages in Brewfile to latest versions]' \
                 'help[Show package help]'

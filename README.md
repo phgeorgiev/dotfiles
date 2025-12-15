@@ -46,6 +46,7 @@ dot link                    # Create global symlink for dot script
 ```console
 dot package add git vim     # Add packages to Brewfile and install them
 dot package check           # Check installed vs missing packages from Brewfile
+dot package outdated        # Check for outdated packages from Brewfile
 dot package remove git vim  # Remove packages from Brewfile and uninstall them
 dot package update all      # Update all packages from Brewfile
 dot package update git vim  # Update specific packages
@@ -62,6 +63,9 @@ dot package add neovim
 
 # Check which packages are installed vs missing from Brewfile
 dot package check
+
+# Check which packages from Brewfile have updates available
+dot package outdated
 
 # Remove a package and remove it from Brewfile
 dot package remove vim

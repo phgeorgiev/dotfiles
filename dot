@@ -360,6 +360,9 @@ cmd_package() {
         check)
             package_check "$@"
             ;;
+        outdated)
+            package_outdated "$@"
+            ;;
         help|*)
             echo "Usage: dot package [SUBCOMMAND]"
             echo ""
@@ -368,6 +371,7 @@ cmd_package() {
             echo "  check       Check installed vs missing packages from Brewfile"
             echo "  clean       Remove unused packages and cleanup Homebrew"
             echo "  link        Switch between package versions"
+            echo "  outdated    Check for outdated packages from Brewfile"
             echo "  remove      Remove packages from Brewfile and uninstall them"
             echo "  update      Update packages (all|package names)"
             echo ""
@@ -379,6 +383,7 @@ cmd_package() {
             echo "  dot package link node@22      Switch to node version 22"
             echo "  dot package link list         List available packages and versions"
             echo "  dot package check             Check installed vs missing packages"
+            echo "  dot package outdated          Check for outdated packages"
             echo "  dot package clean             Clean up unused packages"
             ;;
     esac
@@ -820,6 +825,84 @@ package_check() {
             print_info "  - $total_untracked installed but not in Brewfile"
         fi
     fi
+}
+
+package_outdated() {
+    if ! command_exists brew; then
+        print_error "Homebrew is not installed"
+        return 1
+    fi
+
+    if [[ ! -f "${INSTALL_DIR}/Brewfile" ]]; then
+        print_warning "No Brewfile found at ${INSTALL_DIR}/Brewfile"
+        print_info "Create a Brewfile to manage packages with 'brew bundle dump'"
+        return 1
+    fi
+
+    print_header "Checking for outdated packages"
+
+    # Get all outdated packages with version info
+    local outdated_formulas_full
+    local outdated_casks_full
+    outdated_formulas_full=$(brew outdated --formula --verbose 2>/dev/null || true)
+    outdated_casks_full=$(brew outdated --cask --greedy --verbose 2>/dev/null || true)
+
+    # Read Brewfile and extract package names
+    local brewfile_formulas
+    local brewfile_casks
+    brewfile_formulas=$(grep '^brew ' "${INSTALL_DIR}/Brewfile" | sed 's/^brew "\([^"]*\)".*/\1/' | sed 's|.*/||')
+    brewfile_casks=$(grep '^cask ' "${INSTALL_DIR}/Brewfile" | sed 's/^cask "\([^"]*\)".*/\1/')
+
+    local outdated_brew_lines=()
+    local outdated_cask_lines=()
+
+    # Filter outdated formulas that are in Brewfile
+    while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        # Extract package name from the line (first word)
+        local package_name
+        package_name=$(echo "$line" | awk '{print $1}')
+        if echo "$brewfile_formulas" | grep -q "^${package_name}$"; then
+            outdated_brew_lines+=("$line")
+        fi
+    done <<< "$outdated_formulas_full"
+
+    # Filter outdated casks that are in Brewfile
+    while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        # Extract package name from the line (first word)
+        local package_name
+        package_name=$(echo "$line" | awk '{print $1}')
+        if echo "$brewfile_casks" | grep -q "^${package_name}$"; then
+            outdated_cask_lines+=("$line")
+        fi
+    done <<< "$outdated_casks_full"
+
+    # Display results
+    if [[ ${#outdated_brew_lines[@]} -eq 0 ]] && [[ ${#outdated_cask_lines[@]} -eq 0 ]]; then
+        print_success "All packages from Brewfile are up to date!"
+        return 0
+    fi
+
+    if [[ ${#outdated_brew_lines[@]} -gt 0 ]]; then
+        print_warning "Outdated formulas (${#outdated_brew_lines[@]}):"
+        for line in "${outdated_brew_lines[@]}"; do
+            echo "  ⬆ $line"
+        done
+    fi
+
+    if [[ ${#outdated_cask_lines[@]} -gt 0 ]]; then
+        echo ""
+        print_warning "Outdated casks (${#outdated_cask_lines[@]}):"
+        for line in "${outdated_cask_lines[@]}"; do
+            echo "  ⬆ $line"
+        done
+    fi
+
+    local total_outdated=$((${#outdated_brew_lines[@]} + ${#outdated_cask_lines[@]}))
+    echo ""
+    print_info "Total outdated packages: $total_outdated"
+    print_info "To update all packages, run: dot package update all"
 }
 
 # Link command
