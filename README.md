@@ -94,3 +94,9 @@ dot stow
 # Update dotfiles and optionally upgrade packages
 dot update
 ```
+
+## Claude Code Skills
+
+Custom [Claude Code](https://docs.anthropic.com/en/docs/claude-code) slash commands are stored in `home/.claude/commands/` and symlinked to `~/.claude/commands/` via stow.
+
+Personal (non-shared) commands go in `home/.claude/commands/_personal/`, which is git-ignored.
