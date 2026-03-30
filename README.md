@@ -97,6 +97,11 @@ dot update
 
 ## Claude Code Skills
 
-Custom [Claude Code](https://docs.anthropic.com/en/docs/claude-code) slash commands are stored in `home/.claude/commands/` and symlinked to `~/.claude/commands/` via stow.
+Custom [Claude Code](https://docs.anthropic.com/en/docs/claude-code) slash commands and skills are symlinked to `~/.claude/` via stow.
 
-Personal (non-shared) commands go in `home/.claude/commands/_personal/`, which is git-ignored.
+| Type | Location | Invocation |
+|---|---|---|
+| Commands | `home/.claude/commands/` | `/command-name` |
+| Skills | `home/.claude/skills/` | `/skill-name` |
+
+Personal (non-shared) commands and skills go in the `_personal/` subfolder of each directory, which is git-ignored.
