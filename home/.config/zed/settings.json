@@ -68,5 +68,7 @@
     "php": true,
     "make": true,
     "markdownlint": true,
+    "helm": true,
+    "docker-compose": true,
   },
 }
