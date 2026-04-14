@@ -266,6 +266,7 @@ install_packages() {
         print_header "Installing missing packages from Brewfile"
         if brew bundle --file="${INSTALL_DIR}/Brewfile"; then
             print_success "Packages installed from Brewfile"
+            jenv_register_all
         else
             print_error "Failed to install packages from Brewfile"
             return 1
@@ -389,6 +390,18 @@ cmd_package() {
     esac
 }
 
+jenv_register_all() {
+    if ! command_exists jenv; then
+        return 0
+    fi
+
+    print_info "Registering JDKs with jenv..."
+    while IFS= read -r home; do
+        [[ -z "$home" ]] && continue
+        jenv add "$home" 2>/dev/null && print_success "Registered: $home" || true
+    done < <(find /Library/Java/JavaVirtualMachines -maxdepth 3 -name "Home" 2>/dev/null)
+}
+
 package_add() {
     if ! command_exists brew; then
         print_error "Homebrew is not installed"
@@ -415,6 +428,8 @@ package_add() {
                 if ! brew install --cask "$package"; then
                     print_error "Failed to install cask: $package"
                     failed=1
+                elif [[ "$package" == temurin* ]]; then
+                    jenv_register_all
                 fi
             fi
         else
@@ -653,6 +668,7 @@ package_update() {
         print_info "Upgrading packages from Brewfile..."
         if brew bundle --file="${INSTALL_DIR}/Brewfile"; then
             print_success "All packages updated from Brewfile"
+            jenv_register_all
         else
             print_error "Failed to update packages from Brewfile"
             return 1
