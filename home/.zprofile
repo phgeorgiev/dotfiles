@@ -5,6 +5,7 @@ else
 fi
 
 [ -f ~/.exports ] && source ~/.exports
+eval "$(jenv init -)"
 
 # Added by OrbStack: command-line tools and integration
 # This won't be added again if you remove it.
