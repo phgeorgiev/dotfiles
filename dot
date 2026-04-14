@@ -361,6 +361,9 @@ cmd_package() {
         check)
             package_check "$@"
             ;;
+        sync)
+            package_sync "$@"
+            ;;
         outdated)
             package_outdated "$@"
             ;;
@@ -374,6 +377,7 @@ cmd_package() {
             echo "  link        Switch between package versions"
             echo "  outdated    Check for outdated packages from Brewfile"
             echo "  remove      Remove packages from Brewfile and uninstall them"
+            echo "  sync        Interactively install/remove packages to match Brewfile"
             echo "  update      Update packages (all|package names)"
             echo ""
             echo "Examples:"
@@ -384,6 +388,7 @@ cmd_package() {
             echo "  dot package link node@22      Switch to node version 22"
             echo "  dot package link list         List available packages and versions"
             echo "  dot package check             Check installed vs missing packages"
+            echo "  dot package sync              Interactively sync packages with Brewfile"
             echo "  dot package outdated          Check for outdated packages"
             echo "  dot package clean             Clean up unused packages"
             ;;
@@ -840,6 +845,111 @@ package_check() {
         if [[ $total_untracked -gt 0 ]]; then
             print_info "  - $total_untracked installed but not in Brewfile"
         fi
+    fi
+}
+
+package_sync() {
+    if ! command_exists brew; then
+        print_error "Homebrew is not installed"
+        return 1
+    fi
+
+    if [[ ! -f "${INSTALL_DIR}/Brewfile" ]]; then
+        print_warning "No Brewfile found at ${INSTALL_DIR}/Brewfile"
+        return 1
+    fi
+
+    print_header "Syncing packages with Brewfile"
+
+    local missing_brew=()
+    local missing_cask=()
+    local untracked_brew=()
+    local untracked_cask=()
+
+    local installed_formulas
+    local all_installed_formulas
+    local installed_casks
+    installed_formulas=$(brew leaves 2>/dev/null | sed 's|.*/||' || true)
+    all_installed_formulas=$(brew list --formula 2>/dev/null | sed 's|.*/||' || true)
+    installed_casks=$(brew list --cask 2>/dev/null || true)
+
+    local brewfile_formulas
+    local brewfile_casks
+    brewfile_formulas=$(grep '^brew ' "${INSTALL_DIR}/Brewfile" | sed 's/^brew "\([^"]*\)".*/\1/' | sed 's|.*/||')
+    brewfile_casks=$(grep '^cask ' "${INSTALL_DIR}/Brewfile" | sed 's/^cask "\([^"]*\)".*/\1/')
+
+    while IFS= read -r formula; do
+        [[ -z "$formula" ]] && continue
+        if ! echo "$all_installed_formulas" | grep -q "^${formula}$"; then
+            missing_brew+=("$formula")
+        fi
+    done <<< "$brewfile_formulas"
+
+    while IFS= read -r cask; do
+        [[ -z "$cask" ]] && continue
+        if ! echo "$installed_casks" | grep -q "^${cask}$"; then
+            missing_cask+=("$cask")
+        fi
+    done <<< "$brewfile_casks"
+
+    while IFS= read -r formula; do
+        [[ -z "$formula" ]] && continue
+        if ! echo "$brewfile_formulas" | grep -q "^${formula}$"; then
+            untracked_brew+=("$formula")
+        fi
+    done <<< "$installed_formulas"
+
+    while IFS= read -r cask; do
+        [[ -z "$cask" ]] && continue
+        if ! echo "$brewfile_casks" | grep -q "^${cask}$"; then
+            untracked_cask+=("$cask")
+        fi
+    done <<< "$installed_casks"
+
+    local did_something=0
+
+    if [[ ${#missing_brew[@]} -gt 0 ]] || [[ ${#missing_cask[@]} -gt 0 ]]; then
+        print_warning "Packages to install (in Brewfile, not installed):"
+        for formula in "${missing_brew[@]+"${missing_brew[@]}"}"; do
+            read -p "  Install formula: $formula? (Y/n): " -n 1 -r; echo ""
+            if [[ -z "$REPLY" ]] || [[ "$REPLY" =~ ^[Yy]$ ]]; then
+                brew install "$formula" && print_success "Installed $formula" || print_error "Failed to install $formula"
+                did_something=1
+            fi
+        done
+        for cask in "${missing_cask[@]+"${missing_cask[@]}"}"; do
+            read -p "  Install cask: $cask? (Y/n): " -n 1 -r; echo ""
+            if [[ -z "$REPLY" ]] || [[ "$REPLY" =~ ^[Yy]$ ]]; then
+                brew install --cask "$cask" && print_success "Installed $cask" || print_error "Failed to install $cask"
+                if [[ "$cask" == temurin* ]]; then
+                    jenv_register_all
+                fi
+                did_something=1
+            fi
+        done
+    fi
+
+    if [[ ${#untracked_brew[@]} -gt 0 ]] || [[ ${#untracked_cask[@]} -gt 0 ]]; then
+        echo ""
+        print_info "Packages to remove (installed, not in Brewfile):"
+        for formula in "${untracked_brew[@]+"${untracked_brew[@]}"}"; do
+            read -p "  Remove formula: $formula? (y/N): " -n 1 -r; echo ""
+            if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+                brew uninstall "$formula" && print_success "Removed $formula" || print_error "Failed to remove $formula"
+                did_something=1
+            fi
+        done
+        for cask in "${untracked_cask[@]+"${untracked_cask[@]}"}"; do
+            read -p "  Remove cask: $cask? (y/N): " -n 1 -r; echo ""
+            if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+                brew uninstall --cask "$cask" && print_success "Removed $cask" || print_error "Failed to remove $cask"
+                did_something=1
+            fi
+        done
+    fi
+
+    if [[ $did_something -eq 0 ]]; then
+        print_success "Everything is in sync"
     fi
 }
 

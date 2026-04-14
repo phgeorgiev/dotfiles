@@ -43,6 +43,7 @@ _dot_package() {
                 'link[Switch between package versions]' \
                 'outdated[Check for outdated packages from Brewfile]' \
                 'remove[Remove packages from Brewfile and uninstall them]' \
+                'sync[Interactively install/remove packages to match Brewfile]' \
                 'update[Update packages in Brewfile to latest versions]' \
                 'help[Show package help]'
             ;;
