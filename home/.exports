@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export EDITOR=vim
+export VISUAL=code
 export XDG_CONFIG_HOME="$HOME/.config"
 export PATH="$HOME/.jenv/bin:$PATH"
 export PATH=$PATH:/opt/subversion/bin

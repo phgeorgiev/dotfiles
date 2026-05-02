@@ -39,6 +39,7 @@ dot init                    # Initialize dotfiles setup
 dot update                  # Update dotfiles and optionally upgrade packages
 dot stow                    # Manage dotfiles with GNU stow
 dot link                    # Create global symlink for dot script
+dot edit                    # Open the dotfiles repo in $VISUAL (or $EDITOR)
 ```
 
 ### Package management

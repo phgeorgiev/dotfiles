@@ -1076,6 +1076,12 @@ cmd_link() {
     fi
 }
 
+cmd_edit() {
+    local editor="${VISUAL:-${EDITOR:-vim}}"
+    print_info "Opening ${DOTFILES_DIR} in ${editor}"
+    "$editor" "$DOTFILES_DIR"
+}
+
 # Help command
 cmd_help() {
     echo "Usage: dot [OPTIONS] [COMMAND]"
@@ -1087,6 +1093,7 @@ cmd_help() {
     echo "  init        Initialize and configure dotfiles"
     echo "  update      Update dotfiles and packages"
     echo "  link        Create symlink in /usr/local/bin for global access"
+    echo "  edit        Open the dotfiles repo in \$VISUAL (or \$EDITOR)"
     echo "  package     Package management commands"
     echo "  stow        Manage dotfiles with GNU stow"
     echo ""
@@ -1131,6 +1138,9 @@ main() {
             ;;
         link)
             cmd_link "$@"
+            ;;
+        edit)
+            cmd_edit "$@"
             ;;
         package)
             cmd_package "$@"
