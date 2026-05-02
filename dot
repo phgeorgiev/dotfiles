@@ -22,9 +22,6 @@ DOTFILES_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
 readonly DOTFILES_DIR
 readonly INSTALL_DIR="${DOTFILES_DIR}/install"
 
-# Configurations
-readonly LINKABLE_PACKAGES=("openjdk" "php" "node")
-
 # Helper functions
 print_header() {
     echo -e "\n${BOLD}${BLUE}==>${RESET} ${BOLD}$1${RESET}\n"
@@ -500,14 +497,40 @@ package_link() {
         brew ls --versions | grep "^${package_name}[ @]" | sed 's/ .*//'
     }
 
+    get_linkable_families() {
+        brew ls --versions | awk '{print $1}' | sed 's/@.*//' | sort | uniq -c | awk '$1 >= 2 {print $2}'
+    }
+
     list_packages() {
         print_header "Available packages"
+        local linked_formulas
+        linked_formulas=$(brew info --json=v2 --installed --formula 2>/dev/null | \
+            jq -r '.formulae[] | select(.linked_keg != null) | .name' 2>/dev/null || true)
+
+        local families
+        families=$(get_linkable_families)
+        if [[ -z "$families" ]]; then
+            print_info "No linkable package families found (need 2+ installed variants)"
+            return 0
+        fi
+
         local output=""
-        for package in "${LINKABLE_PACKAGES[@]}"; do
-            local line
-            line="$(brew ls --versions | grep "^${package}[ @]" | sed 's/[[:space:]]/\t/g' | sed 's/^/  /')"
-            output+="${line}\n"
-        done
+        while IFS= read -r package; do
+            [[ -z "$package" ]] && continue
+            while IFS= read -r entry; do
+                [[ -z "$entry" ]] && continue
+                local name ver status
+                name=$(echo "$entry" | awk '{print $1}')
+                ver=$(echo "$entry" | awk '{print $2}')
+                if echo "$linked_formulas" | grep -q "^${name}$"; then
+                    status="(active)"
+                else
+                    status=""
+                fi
+                output+="  ${name}\t${ver}\t${status}\n"
+            done < <(brew ls --versions | grep "^${package}[ @]")
+            output+="\n"
+        done <<< "$families"
         echo -e "$output" | column -t -s $'\t'
     }
 
@@ -525,18 +548,10 @@ package_link() {
     local package_name="${1//@*}"
     local version="$1"
 
-    # Check if package is in allowed list
-    local found=false
-    for pkg in "${LINKABLE_PACKAGES[@]}"; do
-        if [[ "$pkg" == "$package_name" ]]; then
-            found=true
-            break
-        fi
-    done
-
-    if ! $found; then
-        print_error "$package_name is not in the managed packages list"
-        print_info "Available packages: ${LINKABLE_PACKAGES[*]}"
+    if ! get_linkable_families | grep -qx "$package_name"; then
+        print_error "$package_name has fewer than 2 installed variants — nothing to switch"
+        print_info "Linkable packages:"
+        get_linkable_families | sed 's/^/  - /'
         return 1
     fi
 

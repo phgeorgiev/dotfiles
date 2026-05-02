@@ -80,12 +80,11 @@ _dot_package() {
                     fi
                     ;;
                 link)
-                    # Complete with linkable packages and versions
+                    local -a families
+                    families=(${(f)"$(brew ls --versions 2>/dev/null | awk '{print $1}' | sed 's/@.*//' | sort | uniq -c | awk '$1 >= 2 {print $2}')"})
                     _values 'linkable packages' \
                         'list[List available packages and versions]' \
-                        'openjdk' \
-                        'php' \
-                        'node'
+                        $families
                     ;;
             esac
             ;;
