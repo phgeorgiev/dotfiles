@@ -1046,6 +1046,335 @@ package_outdated() {
     print_info "To update all packages, run: dot package update all"
 }
 
+cmd_npm() {
+    local subcmd="${1:-help}"
+    shift || true
+
+    case "$subcmd" in
+        add)
+            npm_add "$@"
+            ;;
+        remove)
+            npm_remove "$@"
+            ;;
+        check)
+            npm_check "$@"
+            ;;
+        sync)
+            npm_sync "$@"
+            ;;
+        freeze)
+            npm_freeze "$@"
+            ;;
+        help|*)
+            echo "Usage: dot npm [SUBCOMMAND]"
+            echo ""
+            echo "Global npm package management subcommands:"
+            echo "  add         Install packages globally and add to Npmfile"
+            echo "  remove      Uninstall packages globally and remove from Npmfile"
+            echo "  check       Show installed vs missing vs untracked packages"
+            echo "  sync        Interactively install missing / remove untracked packages"
+            echo "  freeze      Snapshot current globals into Npmfile"
+            echo ""
+            echo "Examples:"
+            echo "  dot npm add typescript prettier     Install and track packages"
+            echo "  dot npm remove typescript           Uninstall and untrack a package"
+            echo "  dot npm check                       Show drift between Npmfile and system"
+            echo "  dot npm sync                        Bring system in line with Npmfile"
+            echo "  dot npm freeze                      Overwrite Npmfile with current globals"
+            ;;
+    esac
+}
+
+_npm_npmfile() {
+    echo "${INSTALL_DIR}/Npmfile"
+}
+
+_npm_list_npmfile() {
+    local npmfile
+    npmfile=$(_npm_npmfile)
+    [[ ! -f "$npmfile" ]] && return
+    grep -v '^\s*#' "$npmfile" | grep -v '^\s*$' | while IFS= read -r pkg; do
+        if [[ "$pkg" == @*/*@* ]]; then
+            # scoped with version: @scope/name@version → @scope/name
+            echo "${pkg%@*}"
+        elif [[ "$pkg" != @* && "$pkg" == *@* ]]; then
+            # regular with version: name@version → name (exclude scoped packages)
+            echo "${pkg%@*}"
+        else
+            echo "$pkg"
+        fi
+    done
+}
+
+_npm_list_npmfile_raw() {
+    local npmfile
+    npmfile=$(_npm_npmfile)
+    [[ ! -f "$npmfile" ]] && return
+    grep -v '^\s*#' "$npmfile" | grep -v '^\s*$'
+}
+
+_npm_list_global() {
+    npm list -g --depth=0 --parseable 2>/dev/null \
+        | tail -n +2 \
+        | awk -F'/' '{
+            if ($(NF-1) ~ /^@/) { print $(NF-1) "/" $NF }
+            else { print $NF }
+        }' \
+        | grep -v '^npm$'
+}
+
+npm_add() {
+    if ! command_exists npm; then
+        print_error "npm is not installed"
+        return 1
+    fi
+
+    if [[ $# -eq 0 ]]; then
+        print_error "No packages specified"
+        print_info "Usage: dot npm add <package1> [package2] ..."
+        return 1
+    fi
+
+    local npmfile
+    npmfile=$(_npm_npmfile)
+    local failed=0
+
+    print_header "Adding global npm packages"
+
+    for pkg in "$@"; do
+        print_info "Installing $pkg..."
+        if npm install -g "$pkg"; then
+            print_success "Installed $pkg"
+            if ! grep -qxF "$pkg" "$npmfile" 2>/dev/null; then
+                echo "$pkg" >> "$npmfile"
+                print_success "Added $pkg to Npmfile"
+            else
+                print_info "$pkg already in Npmfile"
+            fi
+        else
+            print_error "Failed to install $pkg"
+            failed=1
+        fi
+    done
+
+    [[ $failed -eq 0 ]] || return 1
+}
+
+npm_remove() {
+    if ! command_exists npm; then
+        print_error "npm is not installed"
+        return 1
+    fi
+
+    if [[ $# -eq 0 ]]; then
+        print_error "No packages specified"
+        print_info "Usage: dot npm remove <package1> [package2] ..."
+        return 1
+    fi
+
+    local npmfile
+    npmfile=$(_npm_npmfile)
+    local failed=0
+
+    print_header "Removing global npm packages"
+
+    for pkg in "$@"; do
+        print_info "Uninstalling $pkg..."
+        if npm uninstall -g "$pkg"; then
+            print_success "Uninstalled $pkg"
+        else
+            print_warning "Failed to uninstall $pkg (may not be installed)"
+            failed=1
+        fi
+        # Remove from Npmfile regardless (clean up stale entries too)
+        if [[ -f "$npmfile" ]]; then
+            local tmp="${npmfile}.tmp"
+            grep -vxF "$pkg" "$npmfile" > "$tmp" && mv "$tmp" "$npmfile"
+            print_success "Removed $pkg from Npmfile"
+        fi
+    done
+
+    [[ $failed -eq 0 ]] || return 1
+}
+
+npm_check() {
+    if ! command_exists npm; then
+        print_error "npm is not installed"
+        return 1
+    fi
+
+    local npmfile
+    npmfile=$(_npm_npmfile)
+
+    if [[ ! -f "$npmfile" ]]; then
+        print_warning "No Npmfile found at $npmfile"
+        print_info "Run 'dot npm freeze' to create one from your current globals"
+        return 1
+    fi
+
+    print_header "Checking global npm packages"
+
+    local tracked=()
+    local installed=()
+    local missing=()
+    local untracked=()
+
+    while IFS= read -r line; do tracked+=("$line"); done < <(_npm_list_npmfile)
+    while IFS= read -r line; do installed+=("$line"); done < <(_npm_list_global)
+
+    for pkg in "${tracked[@]}"; do
+        [[ -z "$pkg" ]] && continue
+        local found=0
+        for inst in "${installed[@]}"; do
+            [[ "$inst" == "$pkg" ]] && found=1 && break
+        done
+        [[ $found -eq 0 ]] && missing+=("$pkg")
+    done
+
+    for inst in "${installed[@]}"; do
+        [[ -z "$inst" ]] && continue
+        local found=0
+        for pkg in "${tracked[@]}"; do
+            [[ "$pkg" == "$inst" ]] && found=1 && break
+        done
+        [[ $found -eq 0 ]] && untracked+=("$inst")
+    done
+
+    print_success "Tracked and installed ($(( ${#tracked[@]} - ${#missing[@]} ))):"
+    for pkg in "${tracked[@]}"; do
+        [[ -z "$pkg" ]] && continue
+        local is_missing=0
+        for m in "${missing[@]}"; do [[ "$m" == "$pkg" ]] && is_missing=1 && break; done
+        [[ $is_missing -eq 0 ]] && echo "  ✓ $pkg"
+    done
+
+    if [[ ${#missing[@]} -gt 0 ]]; then
+        echo ""
+        print_warning "Missing (in Npmfile, not installed) (${#missing[@]}):"
+        for pkg in "${missing[@]}"; do echo "  ✗ $pkg"; done
+    fi
+
+    if [[ ${#untracked[@]} -gt 0 ]]; then
+        echo ""
+        print_info "Untracked (installed globally, not in Npmfile) (${#untracked[@]}):"
+        for pkg in "${untracked[@]}"; do echo "  • $pkg"; done
+    fi
+
+    echo ""
+    if [[ ${#missing[@]} -eq 0 ]] && [[ ${#untracked[@]} -eq 0 ]]; then
+        print_success "Everything is in sync"
+    else
+        [[ ${#missing[@]} -gt 0 ]] && print_info "Run 'dot npm sync' to install missing packages"
+        [[ ${#untracked[@]} -gt 0 ]] && print_info "Run 'dot npm freeze' to track untracked packages, or 'dot npm sync' to remove them"
+    fi
+}
+
+npm_sync() {
+    if ! command_exists npm; then
+        print_error "npm is not installed"
+        return 1
+    fi
+
+    local npmfile
+    npmfile=$(_npm_npmfile)
+
+    if [[ ! -f "$npmfile" ]]; then
+        print_warning "No Npmfile found at $npmfile"
+        print_info "Run 'dot npm freeze' to create one from your current globals"
+        return 1
+    fi
+
+    print_header "Syncing global npm packages"
+
+    local tracked=()
+    local installed=()
+    local missing=()
+    local untracked=()
+
+    while IFS= read -r line; do tracked+=("$line"); done < <(_npm_list_npmfile)
+    while IFS= read -r line; do installed+=("$line"); done < <(_npm_list_global)
+
+    for pkg in "${tracked[@]}"; do
+        [[ -z "$pkg" ]] && continue
+        local found=0
+        for inst in "${installed[@]}"; do [[ "$inst" == "$pkg" ]] && found=1 && break; done
+        [[ $found -eq 0 ]] && missing+=("$pkg")
+    done
+
+    for inst in "${installed[@]}"; do
+        [[ -z "$inst" ]] && continue
+        local found=0
+        for pkg in "${tracked[@]}"; do [[ "$pkg" == "$inst" ]] && found=1 && break; done
+        [[ $found -eq 0 ]] && untracked+=("$inst")
+    done
+
+    local did_something=0
+
+    if [[ ${#missing[@]} -gt 0 ]]; then
+        print_warning "Packages to install (in Npmfile, not installed):"
+        for pkg in "${missing[@]}"; do
+            read -p "  Install $pkg? (Y/n): " -n 1 -r; echo ""
+            if [[ -z "$REPLY" ]] || [[ "$REPLY" =~ ^[Yy]$ ]]; then
+                if npm install -g "$pkg"; then print_success "Installed $pkg"; else print_error "Failed to install $pkg"; fi
+                did_something=1
+            fi
+        done
+    fi
+
+    if [[ ${#untracked[@]} -gt 0 ]]; then
+        echo ""
+        print_info "Packages to remove (installed globally, not in Npmfile):"
+        for pkg in "${untracked[@]}"; do
+            read -p "  Remove $pkg? (y/N): " -n 1 -r; echo ""
+            if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+                if npm uninstall -g "$pkg"; then print_success "Removed $pkg"; else print_error "Failed to remove $pkg"; fi
+                did_something=1
+            fi
+        done
+    fi
+
+    [[ $did_something -eq 0 ]] && print_success "Everything is in sync"
+}
+
+npm_freeze() {
+    if ! command_exists npm; then
+        print_error "npm is not installed"
+        return 1
+    fi
+
+    local npmfile
+    npmfile=$(_npm_npmfile)
+
+    print_header "Freezing global npm packages to Npmfile"
+
+    local packages=()
+    while IFS= read -r line; do packages+=("$line"); done < <(_npm_list_global)
+
+    if [[ ${#packages[@]} -eq 0 ]]; then
+        print_warning "No global packages found (excluding npm itself)"
+        return 0
+    fi
+
+    print_info "Packages to write:"
+    for pkg in "${packages[@]}"; do echo "  • $pkg"; done
+    echo ""
+
+    if ! ask_confirmation "Overwrite Npmfile with these ${#packages[@]} packages?" "y"; then
+        return 0
+    fi
+
+    {
+        echo "# Global npm packages"
+        echo "# One package per line. Supports version pins: package@version"
+        echo "# Managed with: dot npm add/remove/freeze/sync"
+        echo ""
+        for pkg in "${packages[@]}"; do echo "$pkg"; done
+    } > "$npmfile"
+
+    print_success "Npmfile written with ${#packages[@]} packages"
+}
+
 # Link command
 cmd_link() {
     local link_path="/usr/local/bin/dot"
@@ -1107,6 +1436,7 @@ cmd_help() {
     echo "  link        Create symlink in /usr/local/bin for global access"
     echo "  edit        Open the dotfiles repo in \$VISUAL (or \$EDITOR)"
     echo "  notes       Open the notes repo in \$VISUAL (or \$EDITOR)"
+    echo "  npm         Global npm package management"
     echo "  package     Package management commands"
     echo "  stow        Manage dotfiles with GNU stow"
     echo ""
@@ -1157,6 +1487,9 @@ main() {
             ;;
         notes)
             cmd_notes "$@"
+            ;;
+        npm)
+            cmd_npm "$@"
             ;;
         package)
             cmd_package "$@"

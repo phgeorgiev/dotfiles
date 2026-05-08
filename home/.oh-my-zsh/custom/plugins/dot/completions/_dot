@@ -15,16 +15,40 @@ _dot() {
                 'link[Create symlink in /usr/local/bin for global access]' \
                 'edit[Open the dotfiles repo in $VISUAL or $EDITOR]' \
                 'notes[Open the notes repo in $VISUAL or $EDITOR]' \
+                'npm[Global npm package management]' \
                 'package[Package management commands]' \
                 'stow[Manage dotfiles with GNU stow]' \
                 'update[Update dotfiles and optionally upgrade packages]'
             ;;
         args)
             case ${line[1]} in
+                npm)
+                    _dot_npm
+                    ;;
                 package)
                     _dot_package
                     ;;
             esac
+            ;;
+    esac
+}
+
+_dot_npm() {
+    local line state
+
+    _arguments -C \
+        '1: :->subcommand' \
+        '*::arg:->args'
+
+    case $state in
+        subcommand)
+            _values 'dot npm subcommands' \
+                'add[Install packages globally and add to Npmfile]' \
+                'remove[Uninstall packages globally and remove from Npmfile]' \
+                'check[Show installed vs missing vs untracked packages]' \
+                'sync[Interactively install missing / remove untracked packages]' \
+                'freeze[Snapshot current globals into Npmfile]' \
+                'help[Show npm help]'
             ;;
     esac
 }
