@@ -14,6 +14,7 @@ _dot() {
                 'init[Initialize dotfiles setup]' \
                 'link[Create symlink in /usr/local/bin for global access]' \
                 'edit[Open the dotfiles repo in $VISUAL or $EDITOR]' \
+                'notes[Open the notes repo in $VISUAL or $EDITOR]' \
                 'package[Package management commands]' \
                 'stow[Manage dotfiles with GNU stow]' \
                 'update[Update dotfiles and optionally upgrade packages]'

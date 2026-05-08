@@ -1082,6 +1082,18 @@ cmd_edit() {
     "$editor" "$DOTFILES_DIR"
 }
 
+cmd_notes() {
+    local editor="${VISUAL:-${EDITOR:-vim}}"
+    if [[ -d "${NOTES_DIR}" ]]; then
+        print_info "Opening ${NOTES_DIR} in ${editor}"
+        "$editor" "$NOTES_DIR"
+    else
+        print_error "Notes directory not found at ${NOTES_DIR}"
+        print_info "Make sure it exists or add the NOTES_DIR variable to your configuration"
+        return 1
+    fi
+}
+
 # Help command
 cmd_help() {
     echo "Usage: dot [OPTIONS] [COMMAND]"
@@ -1094,6 +1106,7 @@ cmd_help() {
     echo "  update      Update dotfiles and packages"
     echo "  link        Create symlink in /usr/local/bin for global access"
     echo "  edit        Open the dotfiles repo in \$VISUAL (or \$EDITOR)"
+    echo "  notes       Open the notes repo in \$VISUAL (or \$EDITOR)"
     echo "  package     Package management commands"
     echo "  stow        Manage dotfiles with GNU stow"
     echo ""
@@ -1141,6 +1154,9 @@ main() {
             ;;
         edit)
             cmd_edit "$@"
+            ;;
+        notes)
+            cmd_notes "$@"
             ;;
         package)
             cmd_package "$@"
