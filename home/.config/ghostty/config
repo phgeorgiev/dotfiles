@@ -14,5 +14,3 @@ keybind = super+r=reload_config
 keybind = shift+enter=text:\n
 
 window-save-state = always
-
-background-opacity = 0.95
