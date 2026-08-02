@@ -99,14 +99,3 @@ dot stow
 # Update dotfiles and optionally upgrade packages
 dot update
 ```
-
-## Claude Code Skills
-
-Custom [Claude Code](https://docs.anthropic.com/en/docs/claude-code) slash commands and skills are symlinked to `~/.claude/` via stow.
-
-| Type | Location | Invocation |
-|---|---|---|
-| Commands | `home/.claude/commands/` | `/command-name` |
-| Skills | `home/.claude/skills/` | `/skill-name` |
-
-Personal (non-shared) commands and skills go in the `_personal/` subfolder of each directory, which is git-ignored.
