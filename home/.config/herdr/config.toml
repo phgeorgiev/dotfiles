@@ -2,7 +2,7 @@
 name = "catppuccin"
 
 [keys]
-prefix = "ctrl+s"
+prefix = "ctrl+a"
 
 new_tab = "prefix+c"
 rename_tab = "prefix+shift+t"
@@ -10,7 +10,7 @@ previous_tab = "prefix+p"
 next_tab = "prefix+n"
 close_tab = "prefix+shift+x"
 
-split_vertical = "prefix+v"
+split_vertical = "prefix+shift+backslash"
 split_horizontal = "prefix+minus"
 close_pane = "prefix+x"
 zoom = "prefix+z"
