@@ -10,7 +10,7 @@ previous_tab = "prefix+p"
 next_tab = "prefix+n"
 close_tab = "prefix+shift+x"
 
-split_vertical = "prefix+shift+backslash"
+split_vertical = "prefix+|"
 split_horizontal = "prefix+minus"
 close_pane = "prefix+x"
 zoom = "prefix+z"
