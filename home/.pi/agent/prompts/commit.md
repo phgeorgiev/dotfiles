@@ -1,6 +1,6 @@
 ---
-name: commit-me
-description: Evaluate uncommitted (or stashed) changes against atomic commit principles, then give a verdict with suggested commit message(s) following Conventional Commits.
+description: Create a git commit from the current changes
+argument-hint: "[extra instructions]"
 ---
 
 ## 1. Gather changes
@@ -55,3 +55,5 @@ Then, as chat output (not commit body): brief why (2-4 sentences), any typos/iss
 
 - Stage the relevant files and lines (`git add`) per the split.
 - Create the commit. Default to title only (skip the body); add a body only when the title alone can't carry the why. No co-author trailer.
+
+Do not push. Do not do anything else beyond staging and committing.
