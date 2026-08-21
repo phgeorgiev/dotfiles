@@ -42,5 +42,10 @@ key = "prefix+alt+p"
 type = "shell"
 command = "gh pr view -w"
 
+[[keys.command]]
+key = "prefix+alt+z"
+type = "shell"
+command = "zed ."
+
 [ui]
 agent_panel_sort = "spaces"
