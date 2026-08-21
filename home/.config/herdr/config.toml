@@ -1,3 +1,4 @@
+onboarding = false
 [theme]
 name = "catppuccin"
 
@@ -35,6 +36,11 @@ type = "popup"
 command = "lazygit"
 width = "80%"
 height = "80%"
+
+[[keys.command]]
+key = "prefix+alt+p"
+type = "shell"
+command = "gh pr view -w"
 
 [ui]
 agent_panel_sort = "spaces"
