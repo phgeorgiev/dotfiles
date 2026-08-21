@@ -32,6 +32,7 @@ help = "prefix+?"
 
 [[keys.command]]
 key = "prefix+alt+g"
+description = "Open Lazygit"
 type = "popup"
 command = "lazygit"
 width = "80%"
@@ -39,11 +40,13 @@ height = "80%"
 
 [[keys.command]]
 key = "prefix+alt+p"
+description = "Open current PR in browser"
 type = "shell"
 command = "gh pr view -w"
 
 [[keys.command]]
 key = "prefix+alt+z"
+description = "Open project in Zed"
 type = "shell"
 command = "zed ."
 
