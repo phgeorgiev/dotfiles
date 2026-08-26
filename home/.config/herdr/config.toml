@@ -47,10 +47,10 @@ type = "shell"
 command = "gh pr view -w"
 
 [[keys.command]]
-key = "prefix+alt+z"
-description = "Open project in Zed"
+key = "prefix+alt+v"
+description = "Open project in VS Code"
 type = "shell"
-command = "zed ."
+command = "code ."
 
 [ui]
 agent_panel_sort = "spaces"
