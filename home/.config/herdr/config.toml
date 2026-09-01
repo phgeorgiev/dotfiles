@@ -47,10 +47,22 @@ type = "shell"
 command = "gh pr view -w"
 
 [[keys.command]]
-key = "prefix+alt+v"
+key = "prefix+ctrl+v"
 description = "Open project in VS Code"
 type = "shell"
 command = "code ."
+
+[[keys.command]]
+key = "prefix+ctrl+i"
+description = "Open project in IntelliJ IDEA"
+type = "shell"
+command = "idea ."
+
+[[keys.command]]
+key = "prefix+ctrl+p"
+description = "Open project in PhpStorm"
+type = "shell"
+command = "phpstorm ."
 
 [ui]
 agent_panel_sort = "spaces"
