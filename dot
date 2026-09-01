@@ -312,6 +312,44 @@ cmd_update() {
     fi
 }
 
+# Directories that other tools write into at runtime.
+#
+# Stow folds a directory into a single symlink when the target does not exist
+# yet, so on a fresh machine ~/.claude would become a link to home/.claude in
+# this repo. Every file the tool writes afterwards lands in the working tree,
+# and any relative symlink it creates resolves from the repo instead of $HOME
+# (`..` follows the physical path), leaving the link dangling.
+#
+# Pre-creating these as real directories forces stow to descend and link the
+# individual tracked entries instead of claiming the whole directory.
+NO_FOLD_DIRS=(
+    ".agents/skills"
+    ".claude"
+    ".claude/skills"
+    ".pi/agent/skills"
+)
+
+ensure_no_fold() {
+    local dir target link_text
+
+    for dir in "${NO_FOLD_DIRS[@]}"; do
+        target="${HOME}/${dir}"
+
+        # Already folded by an earlier stow: drop the link (never its contents,
+        # hence no -r and no trailing slash) so mkdir can put a real dir here.
+        if [ -L "${target}" ]; then
+            link_text="$(readlink "${target}")"
+            print_warning "~/${dir} is a symlink (-> ${link_text}), unfolding it"
+            rm "${target}"
+        fi
+
+        if [ ! -d "${target}" ]; then
+            mkdir -p "${target}"
+            print_info "Created real directory ~/${dir}"
+        fi
+    done
+}
+
 # Stow command
 cmd_stow() {
     print_header "Stowing dotfiles"
@@ -321,6 +359,8 @@ cmd_stow() {
         print_info "Install it first: brew install stow"
         return 1
     fi
+
+    ensure_no_fold
 
     print_info "Creating symlinks for dotfiles..."
 

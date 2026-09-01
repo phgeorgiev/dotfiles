@@ -1,3 +1,17 @@
-home/.claude/commands/_personal/
-home/.claude/skills/_personal/
+# Claude runtime and machine-local configuration
+home/.claude/*
+
+# Authored Claude customization
+!home/.claude/statusline.sh
 home/.zshlocal
+
+# Pi runtime state and machine-specific configuration
+home/.pi/agent/*
+home/.pi/todos/
+home/.pi/.pi/todos/
+.pi/todos/
+
+# Commit authored Pi resources only
+!home/.pi/agent/prompts/
+!home/.pi/agent/prompts/**
+
