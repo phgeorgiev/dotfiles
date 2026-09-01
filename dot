@@ -1423,6 +1423,231 @@ cmd_notes() {
     fi
 }
 
+# Clean command
+cmd_clean() {
+    local subcmd="${1:-help}"
+    shift || true
+
+    case "$subcmd" in
+        jetbrains)
+            clean_jetbrains "$@"
+            ;;
+        help|*)
+            echo "Usage: dot clean [SUBCOMMAND] [OPTIONS]"
+            echo ""
+            echo "Cache cleanup subcommands:"
+            echo "  jetbrains   Remove JetBrains caches left behind by deleted worktrees"
+            echo ""
+            echo "Options:"
+            echo "  -n, --dry-run   Show what would be removed without deleting"
+            echo "  -a, --all       Include caches for worktrees that still exist"
+            echo ""
+            echo "Examples:"
+            echo "  dot clean jetbrains            Remove caches for deleted worktrees"
+            echo "  dot clean jetbrains --dry-run  Preview what would be removed"
+            echo "  dot clean jetbrains --all      Remove caches for every herdr worktree"
+            ;;
+    esac
+}
+
+_clean_worktrees_dir() {
+    echo "${HERDR_WORKTREES_DIR:-${HOME}/.herdr/worktrees}"
+}
+
+_clean_jetbrains_dir() {
+    echo "${HOME}/Library/Caches/JetBrains"
+}
+
+# Resolve which worktree a cache belongs to. Cache directories are named by an
+# opaque hash or a bare branch name, so the only reliable link back to the
+# project is the path recorded inside the cache itself.
+#
+# Worktrees live at <root>/<repo>/<branch>. Matching only <repo> would report
+# every cache as live, because the repo directory outlives the branch worktrees
+# inside it. Fall back to a single segment for flat layouts.
+_clean_cache_worktree() {
+    local cache_file="$1"
+
+    [[ -f "$cache_file" ]] || return 0
+
+    local root segment paths
+    root="$(_clean_worktrees_dir)"
+    segment='[^/"&<>[:space:]]+'
+
+    paths="$(strings "$cache_file" 2>/dev/null | sort -u)"
+
+    local match
+    match="$(printf '%s\n' "$paths" \
+        | grep -oE "${root}/${segment}/${segment}" \
+        | sort -u | head -1)"
+
+    if [[ -z "$match" ]]; then
+        match="$(printf '%s\n' "$paths" \
+            | grep -oE "${root}/${segment}" \
+            | sort -u | head -1)"
+    fi
+
+    echo "$match"
+}
+
+# Emit "cache_dir<TAB>kind<TAB>worktree_path" for every per-project JetBrains
+# cache. An empty worktree field means the cache records no worktree path.
+_clean_jetbrains_entries() {
+    local jb_dir
+    jb_dir="$(_clean_jetbrains_dir)"
+    local dir
+
+    for dir in "${jb_dir}"/analyzer/workspaces/*/; do
+        [[ -d "$dir" ]] || continue
+        printf '%s\t%s\t%s\n' \
+            "$dir" \
+            "analyzer" \
+            "$(_clean_cache_worktree "${dir}workspace-model.cache")"
+    done
+
+    for dir in "${jb_dir}"/*/projects/*/; do
+        [[ -d "$dir" ]] || continue
+        local product
+        product="$(basename "$(dirname "$(dirname "$dir")")")"
+        printf '%s\t%s\t%s\n' \
+            "$dir" \
+            "$product" \
+            "$(_clean_cache_worktree "${dir}cache-state.xml")"
+    done
+}
+
+# A directory alone does not prove the worktree is live. An IDE that still has
+# the project open recreates the path just to write .idea back into it, leaving
+# a shell with no checkout in it. Linked worktrees carry .git as a file.
+_clean_worktree_exists() {
+    local worktree="$1"
+
+    [[ -d "$worktree" ]] && [[ -e "${worktree}/.git" ]]
+}
+
+_clean_jetbrains_running() {
+    pgrep -f "IntelliJ IDEA.app/Contents/MacOS|PhpStorm.app/Contents/MacOS|jetbrainsd" >/dev/null 2>&1
+}
+
+clean_jetbrains() {
+    local dry_run=false
+    local include_active=false
+    local arg
+
+    for arg in "$@"; do
+        case "$arg" in
+            -n|--dry-run)
+                dry_run=true
+                ;;
+            -a|--all)
+                include_active=true
+                ;;
+            *)
+                print_error "Unknown option: $arg"
+                print_info "Run '${SCRIPT_NAME} clean help' for usage information"
+                return 1
+                ;;
+        esac
+    done
+
+    local jb_dir
+    jb_dir="$(_clean_jetbrains_dir)"
+
+    if [[ ! -d "$jb_dir" ]]; then
+        print_info "No JetBrains caches found at ${jb_dir}"
+        return 0
+    fi
+
+    print_header "Scanning JetBrains caches for orphaned worktrees"
+
+    local targets=()
+    local labels=()
+    local unmapped=0
+    local active_kept=0
+    local total_kb=0
+    local dir kind worktree
+
+    while IFS=$'\t' read -r dir kind worktree; do
+        # No recorded path means we cannot prove it belongs to a worktree.
+        if [[ -z "$worktree" ]]; then
+            unmapped=$((unmapped + 1))
+            continue
+        fi
+
+        if _clean_worktree_exists "$worktree" && [[ "$include_active" != true ]]; then
+            active_kept=$((active_kept + 1))
+            continue
+        fi
+
+        local kb size state
+        kb="$(du -sk "$dir" | awk '{print $1}')"
+        size="$(du -sh "$dir" | awk '{print $1}')"
+        if _clean_worktree_exists "$worktree"; then
+            state="active"
+        else
+            state="orphan"
+        fi
+
+        targets+=("$dir")
+        labels+=("$(printf '%6s  %-8s  %-16s  %s' \
+            "$size" "$state" "$(basename "$worktree")" "$kind")")
+        total_kb=$((total_kb + kb))
+    done < <(_clean_jetbrains_entries)
+
+    if [[ "$unmapped" -gt 0 ]]; then
+        print_info "Skipped ${unmapped} cache(s) with no recorded worktree path"
+    fi
+
+    if [[ "$active_kept" -gt 0 ]]; then
+        print_info "Kept ${active_kept} cache(s) for worktrees that still exist (use --all to include)"
+    fi
+
+    if [[ "${#targets[@]}" -eq 0 ]]; then
+        print_success "No orphaned caches found"
+        return 0
+    fi
+
+    local total_human
+    total_human="$(awk -v kb="$total_kb" 'BEGIN {
+        if (kb >= 1048576) printf "%.1fG", kb / 1048576
+        else if (kb >= 1024) printf "%.0fM", kb / 1024
+        else printf "%dK", kb
+    }')"
+
+    echo ""
+    print_info "Caches to remove (${total_human} total):"
+    local label
+    for label in "${labels[@]}"; do
+        echo "  $label"
+    done
+    echo ""
+
+    if [[ "$dry_run" == true ]]; then
+        print_info "Dry run - nothing was removed"
+        return 0
+    fi
+
+    if _clean_jetbrains_running; then
+        print_warning "A JetBrains IDE is running"
+        print_info "Deleting a cache the IDE has open can corrupt its state"
+        if ! ask_confirmation "Continue anyway?"; then
+            return 1
+        fi
+    fi
+
+    if ! ask_confirmation "Remove ${#targets[@]} cache(s), freeing ${total_human}?"; then
+        return 1
+    fi
+
+    local target
+    for target in "${targets[@]}"; do
+        rm -rf "$target"
+    done
+
+    print_success "Removed ${#targets[@]} cache(s), freed ${total_human}"
+    print_info "Affected projects will re-index the next time you open them"
+}
+
 # Help command
 cmd_help() {
     echo "Usage: dot [OPTIONS] [COMMAND]"
@@ -1436,6 +1661,7 @@ cmd_help() {
     echo "  link        Create symlink in /usr/local/bin for global access"
     echo "  edit        Open the dotfiles repo in \$VISUAL (or \$EDITOR)"
     echo "  notes       Open the notes repo in \$VISUAL (or \$EDITOR)"
+    echo "  clean       Remove regenerable IDE and build caches"
     echo "  npm         Global npm package management"
     echo "  package     Package management commands"
     echo "  stow        Manage dotfiles with GNU stow"
@@ -1447,6 +1673,7 @@ cmd_help() {
     echo "  dot help    Display help information"
     echo "  dot -h      Display help information"
     echo "  dot stow    Manage dotfiles with stow"
+    echo "  dot clean jetbrains  Remove orphaned JetBrains caches"
 }
 
 # Main function
@@ -1487,6 +1714,9 @@ main() {
             ;;
         notes)
             cmd_notes "$@"
+            ;;
+        clean)
+            cmd_clean "$@"
             ;;
         npm)
             cmd_npm "$@"

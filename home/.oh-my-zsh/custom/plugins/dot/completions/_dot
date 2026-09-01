@@ -12,6 +12,7 @@ _dot() {
             _values 'dot commands' \
                 'help[Show help message]' \
                 'init[Initialize dotfiles setup]' \
+                'clean[Remove regenerable IDE and build caches]' \
                 'link[Create symlink in /usr/local/bin for global access]' \
                 'edit[Open the dotfiles repo in $VISUAL or $EDITOR]' \
                 'notes[Open the notes repo in $VISUAL or $EDITOR]' \
@@ -22,11 +23,39 @@ _dot() {
             ;;
         args)
             case ${line[1]} in
+                clean)
+                    _dot_clean
+                    ;;
                 npm)
                     _dot_npm
                     ;;
                 package)
                     _dot_package
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+_dot_clean() {
+    local line state
+
+    _arguments -C \
+        '1: :->subcommand' \
+        '*::arg:->args'
+
+    case $state in
+        subcommand)
+            _values 'dot clean subcommands' \
+                'jetbrains[Remove JetBrains caches left behind by deleted worktrees]' \
+                'help[Show clean help]'
+            ;;
+        args)
+            case ${line[1]} in
+                jetbrains)
+                    _values 'options' \
+                        '--dry-run[Show what would be removed without deleting]' \
+                        '--all[Include caches for worktrees that still exist]'
                     ;;
             esac
             ;;

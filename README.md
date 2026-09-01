@@ -40,6 +40,7 @@ dot update                  # Update dotfiles and optionally upgrade packages
 dot stow                    # Manage dotfiles with GNU stow
 dot link                    # Create global symlink for dot script
 dot edit                    # Open the dotfiles repo in $VISUAL (or $EDITOR)
+dot clean                   # Remove regenerable IDE and build caches
 ```
 
 ### Package management
@@ -56,6 +57,28 @@ dot package clean           # Remove packages not in Brewfile and cleanup cache
 dot package link node       # Switch between package versions
 dot package link list       # List available packages and versions
 ```
+
+### Cache cleanup
+
+JetBrains IDEs build a per-project cache for every worktree they open, keyed by
+an opaque hash. Nothing removes those caches when the worktree is deleted, so
+they accumulate indefinitely — the analyzer cache alone can reach double-digit
+gigabytes.
+
+`dot clean jetbrains` reads the project path recorded inside each cache, checks
+whether that worktree still exists, and removes only the orphans.
+
+```console
+dot clean jetbrains            # Remove caches for deleted worktrees
+dot clean jetbrains --dry-run  # Preview what would be removed
+dot clean jetbrains --all      # Also remove caches for worktrees that still exist
+```
+
+Caches with no recorded project path are always left untouched. Worktrees are
+read from `~/.herdr/worktrees`, override with `HERDR_WORKTREES_DIR`.
+
+Quit your IDEs before cleaning — deleting a cache under a running IDE can
+corrupt its state. Cleaned projects re-index on next open.
 
 ### Examples
 
@@ -98,4 +121,10 @@ dot stow
 
 # Update dotfiles and optionally upgrade packages
 dot update
+
+# See which JetBrains caches belong to deleted worktrees
+dot clean jetbrains --dry-run
+
+# Reclaim space from those caches
+dot clean jetbrains
 ```
