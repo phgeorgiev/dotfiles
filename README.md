@@ -72,6 +72,7 @@ whether that worktree still exists, and removes only the orphans.
 dot clean jetbrains            # Remove caches for deleted worktrees
 dot clean jetbrains --dry-run  # Preview what would be removed
 dot clean jetbrains --all      # Also remove caches for worktrees that still exist
+dot clean jetbrains --yes      # Skip the confirmation prompt
 ```
 
 Caches with no recorded project path are always left untouched. Worktrees are
@@ -79,6 +80,16 @@ read from `~/.herdr/worktrees`, override with `HERDR_WORKTREES_DIR`.
 
 Quit your IDEs before cleaning — deleting a cache under a running IDE can
 corrupt its state. Cleaned projects re-index on next open.
+
+Cleanup runs automatically: a herdr plugin
+(`home/.config/herdr/plugins/jetbrains-cache`) subscribes to the
+`worktree.removed` event, so the sweep happens however the worktree goes away —
+CLI, keybinding, or a click in the nav bar. Link it once with
+`herdr plugin link ~/.config/herdr/plugins/jetbrains-cache`.
+
+The hook uses `--yes`. Orphaned caches are removed even while an IDE is running —
+their worktree is gone, so no open project can own them. Caches for live
+worktrees (`--all`) are never touched unattended.
 
 ### Examples
 

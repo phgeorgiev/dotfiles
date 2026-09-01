@@ -1,0 +1,11 @@
+id = "dotfiles.jetbrains-cache"
+name = "JetBrains cache sweep"
+version = "0.1.0"
+description = "Remove JetBrains caches left behind when a worktree is removed"
+min_herdr_version = "0.8.2"
+platforms = ["macos"]
+
+# Fires however the worktree goes away - CLI, keybinding or nav bar click.
+[[events]]
+on = "worktree.removed"
+command = ["./sweep.sh"]

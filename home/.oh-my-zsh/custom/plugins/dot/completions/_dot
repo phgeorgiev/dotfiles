@@ -55,7 +55,8 @@ _dot_clean() {
                 jetbrains)
                     _values 'options' \
                         '--dry-run[Show what would be removed without deleting]' \
-                        '--all[Include caches for worktrees that still exist]'
+                        '--all[Include caches for worktrees that still exist]' \
+                        '--yes[Skip the confirmation prompt]'
                     ;;
             esac
             ;;

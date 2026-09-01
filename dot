@@ -1441,6 +1441,7 @@ cmd_clean() {
             echo "Options:"
             echo "  -n, --dry-run   Show what would be removed without deleting"
             echo "  -a, --all       Include caches for worktrees that still exist"
+            echo "  -y, --yes       Skip the confirmation prompt"
             echo ""
             echo "Examples:"
             echo "  dot clean jetbrains            Remove caches for deleted worktrees"
@@ -1532,6 +1533,7 @@ _clean_jetbrains_running() {
 clean_jetbrains() {
     local dry_run=false
     local include_active=false
+    local assume_yes=false
     local arg
 
     for arg in "$@"; do
@@ -1541,6 +1543,9 @@ clean_jetbrains() {
                 ;;
             -a|--all)
                 include_active=true
+                ;;
+            -y|--yes)
+                assume_yes=true
                 ;;
             *)
                 print_error "Unknown option: $arg"
@@ -1628,15 +1633,28 @@ clean_jetbrains() {
     fi
 
     if _clean_jetbrains_running; then
-        print_warning "A JetBrains IDE is running"
-        print_info "Deleting a cache the IDE has open can corrupt its state"
-        if ! ask_confirmation "Continue anyway?"; then
-            return 1
+        # Orphaned caches belong to worktrees that no longer exist, so no
+        # running IDE can still have those projects open. Caches for live
+        # worktrees are a different matter - never touch those unattended.
+        if [[ "$assume_yes" == true ]] && [[ "$include_active" == true ]]; then
+            print_warning "A JetBrains IDE is running - skipping caches for live worktrees"
+            print_info "Run '${SCRIPT_NAME} clean jetbrains --all' once the IDE is closed"
+            return 0
+        fi
+
+        if [[ "$assume_yes" != true ]]; then
+            print_warning "A JetBrains IDE is running"
+            print_info "Deleting a cache the IDE has open can corrupt its state"
+            if ! ask_confirmation "Continue anyway?"; then
+                return 1
+            fi
         fi
     fi
 
-    if ! ask_confirmation "Remove ${#targets[@]} cache(s), freeing ${total_human}?"; then
-        return 1
+    if [[ "$assume_yes" != true ]]; then
+        if ! ask_confirmation "Remove ${#targets[@]} cache(s), freeing ${total_human}?"; then
+            return 1
+        fi
     fi
 
     local target
