@@ -38,6 +38,7 @@ dot help                    # Show help message
 dot init                    # Initialize dotfiles setup
 dot update                  # Update dotfiles and optionally upgrade packages
 dot stow                    # Manage dotfiles with GNU stow
+dot skills                  # Link repo-tracked skills into Claude's skills directory
 dot link                    # Create global symlink for dot script
 dot edit                    # Open the dotfiles repo in $VISUAL (or $EDITOR)
 dot clean                   # Remove regenerable IDE and build caches
@@ -129,6 +130,9 @@ dot package link list
 
 # Re-stow dotfiles after making changes
 dot stow
+
+# Make a newly added skill visible to Claude Code
+dot skills
 
 # Update dotfiles and optionally upgrade packages
 dot update

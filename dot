@@ -374,6 +374,82 @@ cmd_stow() {
     fi
 }
 
+# Skills command
+#
+# ~/.agents/skills is the shared skill store; stow links the repo-tracked skills
+# into it. pi searches that store directly, so it needs nothing. Claude Code only
+# reads ~/.claude/skills, and npx-skills only mirrors what it installed itself, so
+# personal skills never reach Claude without this.
+#
+# Targets are absolute: a relative link resolves `..` against the physical path,
+# which silently misfires as soon as an ancestor is a symlink.
+cmd_skills() {
+    print_header "Linking repo skills for Claude Code"
+
+    local src_dir="${DOTFILES_DIR}/home/.agents/skills"
+    local dest_dir="${HOME}/.claude/skills"
+    local linked=0 existing=0 skipped=0
+
+    if [ ! -d "${src_dir}" ]; then
+        print_error "No tracked skills at ${src_dir}"
+        return 1
+    fi
+
+    # Guarantees ~/.claude/skills is a real directory, not a stow fold.
+    ensure_no_fold
+
+    local path name target current
+    for path in "${src_dir}"/*; do
+        [ -d "${path}" ] || continue
+
+        name="$(basename "${path}")"
+        target="${HOME}/.agents/skills/${name}"
+
+        if [ ! -e "${target}" ]; then
+            print_warning "${name}: ${target} missing - run 'dot stow' first"
+            skipped=$((skipped + 1))
+            continue
+        fi
+
+        if [ -L "${dest_dir}/${name}" ]; then
+            current="$(readlink "${dest_dir}/${name}")"
+            if [ "${current}" = "${target}" ]; then
+                existing=$((existing + 1))
+                continue
+            fi
+            print_warning "${name}: already links to ${current}, leaving it alone"
+            skipped=$((skipped + 1))
+            continue
+        fi
+
+        if [ -e "${dest_dir}/${name}" ]; then
+            print_warning "${name}: ${dest_dir}/${name} exists and is not a symlink, leaving it alone"
+            skipped=$((skipped + 1))
+            continue
+        fi
+
+        ln -s "${target}" "${dest_dir}/${name}"
+        print_info "Linked ${name}"
+        linked=$((linked + 1))
+    done
+
+    print_success "${linked} linked, ${existing} already current, ${skipped} skipped"
+
+    # Report dangling links without touching them - they may belong to npx-skills
+    # or a plugin, and this command does not own that directory.
+    local entry stale=0
+    for entry in "${dest_dir}"/*; do
+        if [ -L "${entry}" ] && [ ! -e "${entry}" ]; then
+            print_warning "Dangling: $(basename "${entry}") -> $(readlink "${entry}")"
+            stale=$((stale + 1))
+        fi
+    done
+
+    if [ "${stale}" -gt 0 ]; then
+        print_info "${stale} dangling link(s) left in place - remove them yourself if unwanted"
+    fi
+}
+
 # Package command
 cmd_package() {
     local subcmd="${1:-help}"
@@ -1723,6 +1799,7 @@ cmd_help() {
     echo "  npm         Global npm package management"
     echo "  package     Package management commands"
     echo "  stow        Manage dotfiles with GNU stow"
+    echo "  skills      Link repo-tracked skills into Claude's skills directory"
     echo ""
     echo "Options:"
     echo "  -h, --help  Show this help message"
@@ -1731,6 +1808,7 @@ cmd_help() {
     echo "  dot help    Display help information"
     echo "  dot -h      Display help information"
     echo "  dot stow    Manage dotfiles with stow"
+    echo "  dot skills  Make repo-tracked skills visible to Claude Code"
     echo "  dot clean jetbrains  Remove orphaned JetBrains caches"
 }
 
@@ -1784,6 +1862,9 @@ main() {
             ;;
         stow)
             cmd_stow "$@"
+            ;;
+        skills)
+            cmd_skills "$@"
             ;;
         *)
             print_error "Unknown command: $cmd"

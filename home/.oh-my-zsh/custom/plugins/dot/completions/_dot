@@ -18,6 +18,7 @@ _dot() {
                 'notes[Open the notes repo in $VISUAL or $EDITOR]' \
                 'npm[Global npm package management]' \
                 'package[Package management commands]' \
+                'skills[Link repo-tracked skills into the Claude skills directory]' \
                 'stow[Manage dotfiles with GNU stow]' \
                 'update[Update dotfiles and optionally upgrade packages]'
             ;;
