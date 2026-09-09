@@ -65,4 +65,4 @@ type = "shell"
 command = "phpstorm ."
 
 [ui]
-agent_panel_sort = "spaces"
+agent_panel_sort = "priority"
